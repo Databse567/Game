@@ -8,8 +8,8 @@ from csv import unregister_dialect
 import random
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
-unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 20, 1, 4], "Artillery": [10, 0, "Ranged", 1, 4, 0, 10]
-, "Light Armour": [15, 6, "Mobile", 5, 10, 4, 7]}
+unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 20, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 4, 0, 10, 5]
+, "Light Armour": [15, 6, "Mobile", 5, 10, 4, 7, 1]}
 # key: Unit Type: Attack, Defence, Ability, Mobility, Health, Armour, Penetration
 units = {"test 1": ["Infantry", 5, "A"], "test 2": ["Artillery", 2, "B"]
 , "test 3": ["Light Armour", 7, "C"]}
@@ -204,6 +204,12 @@ def ask_for_move(unit:str, movement:int):
             print("that would be deserting")
     return ver, hor
 
+def attack(unit:str):
+    p_targets = []
+    for y in pos:
+        if map[y[0]][y[1]] != "." and map[y[0]][y[1]] not in map[0]:
+            p_targets.append(map[y[0]][y[1]])
+
 def summary():
     print("summary")
 
@@ -255,9 +261,13 @@ while True:
     for x in order:
         if x in units:
             move(units[x][2],x)
+            pos = find_p()
+            for y in pos:
+                if map[y[0]][y[1]] != "." and map[y[0]][y[1]] not in map[0]:
+                    attack(x)
+                    break
         elif x in units_e:
             print("enemy move")
         map_f()
     pos = find_p()
     turn += 1
-
