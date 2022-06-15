@@ -6,10 +6,11 @@
 # variables, imports, constants etc.
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
-units = {"test 1": ["Infantry", 74, 71, 72, 5], "test 2": ["Artillery", 12, 11, 12, 2], "test 3": ["Armour", 8, 6, 7, 7]}
+units = {"test 1": ["Infantry", 74, 71, 72, 5], "test 2": ["Artillery", 43, 11, 12, 2], "test 3": ["Armour", 17, 6, 7, 7]}
 # key: Unit name: Unit type, Manpower, Equipment, Strength, Movement
 MINI = 0
 MENU_MIN = 1 
+go = False
 # Functions
 def menu():
     print("""==========================================
@@ -42,6 +43,18 @@ def start():
         print("{0}. {1}".format(y, x))
     return select_int(MENU_MIN, len(options_2))
 
+def view():
+    print("Here is a list of your units")
+    for x in units:
+        print("Unit {0}".format(x))
+        print("Unit Type: {0}".format(units[x][0]))
+        print("Unit Manpower: {0}".format(units[x][1]))
+        print("Unit Equipment: {0}".format(units[x][2]))
+        print("Unit Movement: {0}".format(units[x][3]))
+
+def summary():
+    print("summary")
+
 def instructions():
     print('instructions')
 
@@ -49,10 +62,10 @@ def settings():
     print('settings')
 
 # code
-while True:
+while go is not True:
     choice = menu()
     if choice == 1:
-        start()
+        go = True
     elif choice == 2:
         instructions()
     elif choice == 3:
@@ -60,5 +73,16 @@ while True:
     elif choice == 4:
         print("goodbye")
         break
+    else:
+        print("something is brokie")
+go = False
+while go is not True:
+    choice = start()
+    if choice == 1:
+        view()
+    elif choice == 2:
+        summary()
+    elif choice == 3:
+        go = True
     else:
         print("something is brokie")
