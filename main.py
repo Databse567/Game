@@ -8,8 +8,8 @@ from csv import unregister_dialect
 import random
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
-unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 20, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 4, 0, 10, 5]
-, "Light Armour": [15, 6, "Mobile", 5, 10, 4, 7, 1]}
+unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 3, 0, 10, 5]
+, "Light Armour": [15, 6, "Mobile", 5, 7, 4, 7, 1]}
 # key: Unit Type: Attack, Defence, Ability, Mobility, Health, Armour, Penetration
 units = {"test 1": ["Infantry", 5, "A"], "test 2": ["Artillery", 2, "B"]
 , "test 3": ["Light Armour", 7, "C"]}
@@ -206,9 +206,47 @@ def ask_for_move(unit:str, movement:int):
 
 def attack(unit:str):
     p_targets = []
-    for y in pos:
-        if map[y[0]][y[1]] != "." and map[y[0]][y[1]] not in map[0]:
+    pos_v = list(pos.values())
+    for y in pos_v:
+        y = list(y)
+        if map[int(y[0])][int(y[1])] != "." and map[int(y[0])][int(y[1])] not in map[0]:
             p_targets.append(map[y[0]][y[1]])
+    p_targets.append("Hold Fire")
+    print("potential targets:")
+    y = 0
+    for x in p_targets:
+        y += 1
+        print("{0}. {1}".format(y, x))
+    print("enter the number of your choice")
+    target = select_int(MENU_MIN, len(p_targets))
+    callsigns = enemy_calls()
+    if target != len(p_targets):
+        stats[callsigns[target]][4] -= stats[unit][0]
+    print(callsigns[target])
+    return callsigns[target]
+
+def enemy_calls():
+    list3 = list(units_e.values())
+    list4 = list(units_e.keys())
+    list5 = []
+    callsigns = {}
+    for x in list3:
+        list5.append(int(x[2]))
+    for x in list5:
+        callsigns[x] = list4[list5.index(x)]
+    return callsigns
+
+def freind_calls():
+    list3 = list(units.values())
+    list4 = list(units.keys())
+    list5 = []
+    callsigns = {}
+    for x in list3:
+        list5.append(x[2])
+    for x in list5:
+        callsigns[x] = list4[list5.index(x)]
+    return callsigns
+
 
 def summary():
     print("summary")
@@ -233,6 +271,7 @@ while go is not True:
         break
     else:
         print("something is brokie")
+
 go = False
 while go is not True:
     choice = start()
@@ -262,12 +301,46 @@ while True:
         if x in units:
             move(units[x][2],x)
             pos = find_p()
-            for y in pos:
-                if map[y[0]][y[1]] != "." and map[y[0]][y[1]] not in map[0]:
-                    attack(x)
+            pos_v = list(pos.values())
+            for y in pos_v:
+                y = list(y)
+                f_calls = freind_calls()
+                f_calls = list(f_calls.values())
+                if map[int(y[0])][int(y[1])] != "." \
+                    and map[int(y[0])][int(y[1])] not in map[0] \
+                        and map[int(y[0])][int(y[1])] not in f_calls:
+                    target = attack(x)
+                    stats = stat_assi()
                     break
         elif x in units_e:
             print("enemy move")
-        map_f()
+        callsigns = enemy_calls()
+        print(target)
+        print('lll')
+        print(stats[target])
+        if stats[target][4] <= 0:
+            #print(x)
+            print(map_f())
+            #print(x)
+            if target in units:
+                remo = map.index(units[target][2])
+            elif target in units_e:
+                y = 0
+                for x in map:
+                    target_ddd = units_e[target][2]
+                    print("wenomechainthesama")
+                    if target_ddd in x:
+                        print('tur ip ip ip')
+                        print(map[y])
+                        remo = map[y].index(target_ddd)
+                        map[y][remo] = "."
+                        break
+                    else:
+                        y += 1
+            else:
+                print("oops")
+    print(order)
+    order.remove(target)
+    map_f()
     pos = find_p()
     turn += 1
