@@ -6,11 +6,12 @@
 # variables, imports, constants etc.
 from csv import unregister_dialect
 import random
+import time
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
 unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 3, 0, 10, 5]
 , "Light Armour": [15, 6, "Mobile", 5, 7, 4, 7, 1]}
-# key: Unit Type: Attack, Defence, Ability, Mobility, Health, Armour, Penetration
+# key: Unit Type: Attack, Defence, Ability, Mobility, Health, Armour, Penetration, Range
 units = {"test 1": ["Infantry", 5, "A"], "test 2": ["Artillery", 2, "B"]
 , "test 3": ["Light Armour", 7, "C"]}
 units_e = {"test 1_e": ["Infantry", 4, "1"], "test 2_e": ["Artillery", 1, "2"]
@@ -139,6 +140,51 @@ def stat_assi():
         statis = unit_t_s[type]
         stats[x] = statis
     return stats
+
+def range(unit:str):
+    range = stats[unit][7]
+    in_range = []
+    if unit in units:
+        call = units[unit][2]
+        posi = pos[call]
+    elif unit in units_e:
+        call = units_e[unit][2]
+        posi = pos[call]
+    posi = list(posi)
+    p_0 = posi[0]
+    p_1 = posi[1]
+    y = 0
+    range_2 = range
+    while y <= range:
+        in_r = []
+        one = p_1 + range_2
+        two = p_1 - range_2
+        three = p_0 - y
+        four = two
+        print(one)
+        print(two)
+        print(four)
+        print(three)
+        while four >= one:
+            cord = []
+            print(two)
+            print(four)
+            print(three)
+            if four > MINI and four <= len(map[0]):
+                if three > MINI and three <= len(map) - 1:
+                    print("NUTS!?!?!?!?!")
+                    cord.append(three)
+                    cord.append(four)
+                    print(cord)
+                    in_range.append(cord)
+            time.sleep(2)
+            four += 1
+            #print(y)
+            #print(range_2)
+            #print(range)
+        y += 1
+        range_2 += 1
+    print(in_range)
 
 def find_p():
     pos ={}
@@ -312,10 +358,11 @@ place_unit_e()
 order = orderer()
 stats = stat_assi()
 pos = find_p()
+range('test 1')
 # game starts
 turn = 1
 while True:
-    print("""########################
+    print("""#######################
         Turn {0}
 #######################""".format(turn))
     for x in order:
