@@ -32,13 +32,13 @@ MENU_MIN = 1
 go = False
 # Functions
 def menu():
-    print("""==========================================
-            Title goes here :)          
-==========================================""")
+    print("""*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+          Title goes here :)          
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*""")
     y = 0
     for x in options:
         y += 1
-        print("             {0}. {1}".format(y, x))
+        print(" {0} - {1}".format(y, x))
     return select_int(MENU_MIN, len(options))
 
 def select_int(min:int, max:int):
@@ -172,6 +172,7 @@ def find_p():
 def move(unit:str, name:str):
     position = list(pos[unit])
     mob = stats[name][3]
+    map_f()
     print("""Unit {0} is at {1}. They can move {2} sqaures.
 you will be asked to provide a left/right move and then an up/down move.
 Right and down are negative, Up and left are positives."""
