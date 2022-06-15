@@ -170,35 +170,39 @@ def find_p():
     return pos
 
 def move(unit:str, name:str):
-    print("Your unit '{0}' is at {1}".format(name, pos[unit]))
-    movement = stats[name][3]
-    print("Your unit can move {0} squares in any direction".format(movement))
-    print("up/down is moved first, so if you use all your moves then you will")
-    print("have none left to go left or right")
-    print("left + down in negatives, up + right is positives.")
-    moves = ask_for_move(unit, movement)
-    hor = moves[0]
-    ver = moves[1]
-    while map[hor][ver] != ".":
-        print("already occupied")
-        moves = ask_for_move(unit, movement)
-        hor = moves[0]
-        ver = moves[1]
-    map[hor][ver] = unit
-    map[pos[unit][0]][pos[unit][1]] = "."
+    position = list(pos[unit])
+    mob = stats[name][3]
+    print("""Unit {0} is at {1}. They can move {2} sqaures.
+you will be asked to provide a left/right move and then an up/down move.
+Right and down are negative, Up and left are positives."""
+          .format(name, pos[unit], mob))
+    moves = ask_for_move(unit, mob)
+    moves = list(moves)
+    ud = position[0] - moves[0]
+    lr = position[1] - moves[1]
+    if map[ud][lr] != ".":
+        print("Space occupied")
+        moves = ask_for_move(unit, mob)
+        ud = position[0] - moves[0]
+        lr = position[1] - moves[1]
+    print(lr)
+    map[ud][lr] = unit
+    map[position[0]][position[1]] = "."
 
 def ask_for_move(unit:str, movement:int):
     ver = 100000000000000
     hor = 100000000000000
-    while ver + pos[unit][0] < 1 or ver + pos[unit][0] > 10:
+    print("Vertical:")
+    while pos[unit][0] - ver < 1 or pos[unit][0] - ver > 10:
         ver = select_int(-movement, movement)
-        if ver + pos[unit][0] < 1 or ver + pos[unit][0] > 10:
+        if pos[unit][0] - ver < 1 or pos[unit][0] - ver > 10:
             print("that would be deserting")
-    while hor + pos[unit][1] < 1 or hor + pos[unit][1] > 15:
-        hor = select_int(-movement, movement)
-        if hor + pos[unit][1] < 1 or hor + pos[unit][1] > 15:
+    print("Horizontal:")
+    while pos[unit][1] - hor < 1 or pos[unit][1] - hor > 15:
+        hor = select_int(-movement + ver, movement - ver)
+        if pos[unit][1] - hor < 1 or pos[unit][1] - hor > 15:
             print("that would be deserting")
-    return hor, ver
+    return ver, hor
 
 def summary():
     print("summary")
@@ -253,4 +257,7 @@ while True:
             move(units[x][2],x)
         elif x in units_e:
             print("enemy move")
+        map_f()
+    pos = find_p()
+    turn += 1
 
