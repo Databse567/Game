@@ -4,11 +4,17 @@
 # portfolio.py
 # gameing
 # variables, imports, constants etc.
+from csv import unregister_dialect
 import random
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
-units = {"test 1": ["Infantry", 74, 71, 72, 5, "A"], "test 2": ["Artillery", 43, 11, 12, 2, "B"], "test 3": ["Light Armour", 17, 6, 7, 7, "C"]}
-units_e = {"test 1_e": ["Infantry", 74, 71, 72, 4, "1"], "test 2_e": ["Artillery", 43, 11, 12, 1, "2"], "test 3_e": ["Light Armour", 17, 6, 7, 6, "3"]}
+unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 20, 1, 4], "Artillery": [10, 0, "Ranged", 1, 4, 0, 10]
+, "Light Armour": [15, 6, "Mobile", 5, 10, 4, 7]}
+# key: Unit Type: Attack, Defence, Ability, Mobility, Health, Armour, Penetration
+units = {"test 1": ["Infantry", 5, "A"], "test 2": ["Artillery", 2, "B"]
+, "test 3": ["Light Armour", 7, "C"]}
+units_e = {"test 1_e": ["Infantry", 4, "1"], "test 2_e": ["Artillery", 1, "2"]
+, "test 3_e": ["Light Armour", 6, "3"]}
 # key: Unit name: Unit type, Manpower, Equipment, Strength, Movement
 map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"],
 ["a", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
@@ -89,7 +95,7 @@ that you want to place your unit on. i.e a -> 1, b -> 2""")
         while map[10][place] != ".":
             place = select_int(MENU_MIN, len(map[10])-1)
         map[10].pop(place)
-        map[10].insert(place, units[x][5])
+        map[10].insert(place, units[x][2])
         map_f()
 
 def place_unit_e():
@@ -98,7 +104,7 @@ def place_unit_e():
         while map[1][place] != ".":
             place = random.randint(MENU_MIN, len(map[1])-1)
         map[1].pop(place)
-        map[1].insert(place, units_e[x][5])
+        map[1].insert(place, units_e[x][2])
         map_f()
 
 def orderer():
@@ -109,11 +115,11 @@ def orderer():
     units_k = list(units.keys())
     units_v = list(units.values())
     for x in units_v:
-        val.append(x[4])
+        val.append(x[1])
     units_e_k = list(units_e.keys())
     units_e_v = list(units_e.values())
     for x in units_e_v:
-        val_e.append(x[4])
+        val_e.append(x[1])
     y = 0
     for x in units_k:
         turn_order[val[y]] = x
@@ -127,6 +133,72 @@ def orderer():
     for x in keys:
         turns.append(turn_order[x])
     return turns
+
+def stat_assi():
+    stats = {}
+    list1 = list(units.keys())
+    list2 = list(units_e.keys())
+    for x in order:
+        if x in list1:
+            type = units[x][0]
+        elif x in list2:
+            type = units_e[x][0]
+        else:
+            print("something is brokie")
+        statis = unit_t_s[type]
+        stats[x] = statis
+    return stats
+
+def find_p():
+    pos ={}
+    units_k = list(units.keys())
+    units_o = []
+    units_l = list(units.values())
+    units_k_e = list(units_e.keys())
+    units_o_e = []
+    units_l_e = list(units_e.values())
+    for x in units_l:
+        units_o.append(x[2])
+    for x in units_l_e:
+        units_o_e.append(x[2])
+    for x in map:
+        for y in x:
+            y = str(y)
+            if y != "." and y not in map[0]:
+                a = x.index(y)
+                pos[y] = map.index(x), a
+    return pos
+
+def move(unit:str, name:str):
+    print("Your unit '{0}' is at {1}".format(name, pos[unit]))
+    movement = stats[name][3]
+    print("Your unit can move {0} squares in any direction".format(movement))
+    print("up/down is moved first, so if you use all your moves then you will")
+    print("have none left to go left or right")
+    print("left + down in negatives, up + right is positives.")
+    moves = ask_for_move(unit, movement)
+    hor = moves[0]
+    ver = moves[1]
+    while map[hor][ver] != ".":
+        print("already occupied")
+        moves = ask_for_move(unit, movement)
+        hor = moves[0]
+        ver = moves[1]
+    map[hor][ver] = unit
+    map[pos[unit][0]][pos[unit][1]] = "."
+
+def ask_for_move(unit:str, movement:int):
+    ver = 100000000000000
+    hor = 100000000000000
+    while ver + pos[unit][0] < 1 or ver + pos[unit][0] > 10:
+        ver = select_int(-movement, movement)
+        if ver + pos[unit][0] < 1 or ver + pos[unit][0] > 10:
+            print("that would be deserting")
+    while hor + pos[unit][1] < 1 or hor + pos[unit][1] > 15:
+        hor = select_int(-movement, movement)
+        if hor + pos[unit][1] < 1 or hor + pos[unit][1] > 15:
+            print("that would be deserting")
+    return hor, ver
 
 def summary():
     print("summary")
@@ -162,7 +234,22 @@ while go is not True:
         go = True
     else:
         print("something is brokie")
+
 map_f()
 place_unit_p()
 place_unit_e()
 order = orderer()
+stats = stat_assi()
+pos = find_p()
+# game starts
+turn = 1
+while True:
+    print("""########################
+        Turn {0}
+#######################""".format(turn))
+    map_f()
+    for x in order:
+        if x in units:
+            move(units[x][2],x)
+        elif x in units_e:
+            print("enemy move")
