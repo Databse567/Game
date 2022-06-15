@@ -1,4 +1,4 @@
-##
+
 # Andy Moran
 # 6/06/2022
 # portfolio.py
@@ -202,13 +202,14 @@ def attack(unit:str):
     p_targets = []
     pos_v = list(pos.values())
     f_calls = freind_calls()
+    f_calls = list(f_calls.keys())
     print(f_calls)
     for y in pos_v:
         y = list(y)
         if map[int(y[0])][int(y[1])] != "." \
             and map[int(y[0])][int(y[1])] not in map[0]\
-                and f_calls[map[int(y[0])][int(y[1])]] not in units:
-            p_targets.append(map[y[0]][y[1]])
+                and map[int(y[0])][int(y[1])] not in f_calls:
+                p_targets.append(map[y[0]][y[1]])
     p_targets.append("Hold Fire")
     print("potential targets:")
     y = 0
@@ -220,9 +221,9 @@ def attack(unit:str):
     target -= 1
     tar = p_targets[target]
     callsigns = enemy_calls()
-    if tar != "hold_fire":
-        stats[callsigns[target]][4] -= stats[unit][0]
-    return callsigns[target]
+    if tar != "Hold Fire":
+        stats[callsigns[int(tar)]][4] -= stats[unit][0]
+    return callsigns[int(tar)]
 
 def enemy_calls():
     list3 = list(units_e.values())
