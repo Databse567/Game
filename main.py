@@ -8,19 +8,19 @@ import random
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
 units = {"test 1": ["Infantry", 74, 71, 72, 5, "A"], "test 2": ["Artillery", 43, 11, 12, 2, "B"], "test 3": ["Light Armour", 17, 6, 7, 7, "C"]}
-units_e = {"test 1": ["Infantry", 74, 71, 72, 4, "1"], "test 2": ["Artillery", 43, 11, 12, 1, "2"], "test 3": ["Light Armour", 17, 6, 7, 6, "3"]}
+units_e = {"test 1_e": ["Infantry", 74, 71, 72, 4, "1"], "test 2_e": ["Artillery", 43, 11, 12, 1, "2"], "test 3_e": ["Light Armour", 17, 6, 7, 6, "3"]}
 # key: Unit name: Unit type, Manpower, Equipment, Strength, Movement
-map_n = [" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"]
-map_1 = ["a", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]
-map_2 = ["b", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]
-map_3 = ["c", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]
-map_4 = ["d", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]
-map_5 = ["e", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]
-map_6 = ["f", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]
-map_7 = ["g", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]
-map_8 = ["h", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]
-map_9 = ["i", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]
-map_10 = ["j", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]
+map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"],
+["a", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["b", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["c", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["d", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["e", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["f", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["g", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["h", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["i", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["j", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]]
 MINI = 0
 MENU_MIN = 1 
 go = False
@@ -66,18 +66,18 @@ def view():
         print("Unit Strength: {0}".format(units[x][3]))
         print("Unit Movement: {0}".format(units[x][4]))
 
-def map():
-    print(" ".join(map_n))
-    print(" ".join(map_1))
-    print(" ".join(map_2))
-    print(" ".join(map_3))
-    print(" ".join(map_4))
-    print(" ".join(map_5))
-    print(" ".join(map_6))
-    print(" ".join(map_7))
-    print(" ".join(map_8))
-    print(" ".join(map_9))
-    print(" ".join(map_10))
+def map_f():
+    print(" ".join(map[0]))
+    print(" ".join(map[1]))
+    print(" ".join(map[2]))
+    print(" ".join(map[3]))
+    print(" ".join(map[4]))
+    print(" ".join(map[5]))
+    print(" ".join(map[6]))
+    print(" ".join(map[7]))
+    print(" ".join(map[8]))
+    print(" ".join(map[9]))
+    print(" ".join(map[10]))
 
 def place_unit_p():
     placed = False
@@ -86,45 +86,47 @@ def place_unit_p():
 that you want to place your unit on. i.e a -> 1, b -> 2""")
     for x in units:
         print("place unit {0}: ".format(x))
-        while map_10[place] != ".":
-            place = select_int(MENU_MIN, len(map_10))
-        map_10.pop(place)
-        map_10.insert(place, units[x][5])
-        map()
+        while map[10][place] != ".":
+            place = select_int(MENU_MIN, len(map[10])-1)
+        map[10].pop(place)
+        map[10].insert(place, units[x][5])
+        map_f()
 
 def place_unit_e():
     place = 0
     for x in units_e:
-        while map_1[place] != ".":
-            place = random.randint(MENU_MIN, len(map_1))
-        map_1.pop(place)
-        map_1.insert(place, units_e[x][5])
-        map()
+        while map[1][place] != ".":
+            place = random.randint(MENU_MIN, len(map[1])-1)
+        map[1].pop(place)
+        map[1].insert(place, units_e[x][5])
+        map_f()
 
 def orderer():
     turn_order = {}
     turns = []
+    val = []
+    val_e = []
     units_k = list(units.keys())
     units_v = list(units.values())
+    for x in units_v:
+        val.append(x[4])
     units_e_k = list(units_e.keys())
     units_e_v = list(units_e.values())
-    print(units_k)
-    print(units_v)
-    y = 0
-    for x in units_v:
-        turn_order[units_k[y]] = x[4]
-        y += 1
-    y = 0
     for x in units_e_v:
-        turn_order[units_e_k[y]] = x[4]
+        val_e.append(x[4])
+    y = 0
+    for x in units_k:
+        turn_order[val[y]] = x
         y += 1
-    print(list(turn_order.values()))
-    for x in list(turn_order.values()):
-        turn = max(turn_order)
-        turns.append(turn)
-        turn_order.pop(turn)
-    print(turns)
-
+    y = 0
+    for x in units_e_k:
+        turn_order[val_e[y]] = x
+        y += 1
+    keys = list(turn_order.keys())
+    keys.sort(reverse = True)
+    for x in keys:
+        turns.append(turn_order[x])
+    return turns
 
 def summary():
     print("summary")
@@ -160,7 +162,7 @@ while go is not True:
         go = True
     else:
         print("something is brokie")
-map()
+map_f()
 place_unit_p()
 place_unit_e()
-orderer()
+order = orderer()
