@@ -1,4 +1,4 @@
-
+##
 # Andy Moran
 # 6/06/2022
 # portfolio.py
@@ -79,17 +79,16 @@ def map_f():
         y += 1
 
 def place_unit_p():
-    placed = False
     place = 0
     print("""enter the number corresponding to the the vertical number
 that you want to place your unit on. i.e a -> 1, b -> 2""")
     for x in units:
+        map_f()
         print("place unit {0}: ".format(x))
         while map[10][place] != ".":
             place = select_int(MENU_MIN, len(map[10])-1)
         map[10].pop(place)
         map[10].insert(place, units[x][2])
-        map_f()
 
 def place_unit_e():
     place = 0
@@ -98,7 +97,6 @@ def place_unit_e():
             place = random.randint(MENU_MIN, len(map[1])-1)
         map[1].pop(place)
         map[1].insert(place, units_e[x][2])
-        map_f()
 
 def orderer():
     turn_order = {}
@@ -165,7 +163,6 @@ def find_p():
 def move(unit:str, name:str):
     position = list(pos[unit])
     mob = stats[name][3]
-    map_f()
     print("""Unit {0} is at {1}. They can move {2} sqaures.
 you will be asked to provide a left/right move and then an up/down move.
 Right and down are negative, Up and left are positives."""
@@ -179,7 +176,6 @@ Right and down are negative, Up and left are positives."""
         moves = ask_for_move(unit, mob)
         ud = position[0] - moves[0]
         lr = position[1] - moves[1]
-    print(lr)
     map[ud][lr] = unit
     map[position[0]][position[1]] = "."
 
@@ -198,12 +194,36 @@ def ask_for_move(unit:str, movement:int):
             print("that would be deserting")
     return ver, hor
 
+def move_e(unit:str, name:str):
+    position = list(pos[unit])
+    mob = stats[name][3]
+    moves = ask_move_e(unit, mob)
+    moves = list(moves)
+    ud = position[0] - moves[0]
+    lr = position[1] - moves[1]
+    if map[ud][lr] != ".":
+        moves = ask_move_e(unit, mob)
+        ud = position[0] - moves[0]
+        lr = position[1] - moves[1]
+    map[ud][lr] = unit
+    map[position[0]][position[1]] = "."
+
+def ask_move_e(unit:str, movement:int):
+    ver = 100000000000000
+    hor = 100000000000000
+    while pos[unit][0] - ver < 1 or pos[unit][0] - ver > 10:
+        ver = random.randint(-movement, movement)
+    while pos[unit][1] - hor < 1 or pos[unit][1] - hor > 15:
+        movement_2 = ver
+        if movement_2 != movement:
+            hor = random.randint(-movement + movement_2, movement - movement_2)
+    return ver, hor
+
 def attack(unit:str):
     p_targets = []
     pos_v = list(pos.values())
     f_calls = freind_calls()
     f_calls = list(f_calls.keys())
-    print(f_calls)
     for y in pos_v:
         y = list(y)
         if map[int(y[0])][int(y[1])] != "." \
@@ -223,7 +243,10 @@ def attack(unit:str):
     callsigns = enemy_calls()
     if tar != "Hold Fire":
         stats[callsigns[int(tar)]][4] -= stats[unit][0]
-    return callsigns[int(tar)]
+        return callsigns[int(tar)]
+    else:
+        print("Fire held")
+        return None
 
 def enemy_calls():
     list3 = list(units_e.values())
@@ -284,7 +307,6 @@ while go is not True:
     else:
         print("something is brokie")
 
-map_f()
 place_unit_p()
 place_unit_e()
 order = orderer()
@@ -296,8 +318,8 @@ while True:
     print("""########################
         Turn {0}
 #######################""".format(turn))
-    map_f()
     for x in order:
+        map_f()
         if x in units:
             move(units[x][2],x)
             pos = find_p()
@@ -312,26 +334,28 @@ while True:
                     target = attack(x)
                     stats = stat_assi()
                     break
+        
         elif x in units_e:
             print("enemy move")
+            move_e(units_e[x][2], x)
+            pos = find_p()
+
         callsigns = enemy_calls()
-        if stats[target][4] <= 0:
-            if target in units:
-                remo = map.index(units[target][2])
-            elif target in units_e:
-                y = 0
-                for x in map:
-                    target_ddd = units_e[target][2]
-                    if target_ddd in x:
-                        remo = map[y].index(target_ddd)
-                        map[y][remo] = "."
-                        break
-                    else:
-                        y += 1
-            else:
-                print("oops")
-    print(order)
-    order.remove(target)
-    map_f()
+        if target != None:
+            if stats[target][4] <= 0:
+                if target in units:
+                    remo = map.index(units[target][2])
+                elif target in units_e:
+                    y = 0
+                    for x in map:
+                        target_ddd = units_e[target][2]
+                        if target_ddd in x:
+                            remo = map[y].index(target_ddd)
+                            map[y][remo] = "."
+                            break
+                        else:
+                            y += 1
+                else:
+                    print("oops")
     pos = find_p()
     turn += 1
