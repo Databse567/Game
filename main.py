@@ -32,13 +32,13 @@ MENU_MIN = 1
 go = False
 # Functions
 def menu():
-    print("""*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-          Title goes here :)          
-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*""")
+    print("""=========================================
+            Title goes here :)          
+==========================================""")
     y = 0
     for x in options:
         y += 1
-        print(" {0} - {1}".format(y, x))
+        print("             {0}. {1}".format(y, x))
     return select_int(MENU_MIN, len(options))
 
 def select_int(min:int, max:int):
@@ -73,17 +73,10 @@ def view():
         print("Unit Movement: {0}".format(units[x][4]))
 
 def map_f():
-    print(" ".join(map[0]))
-    print(" ".join(map[1]))
-    print(" ".join(map[2]))
-    print(" ".join(map[3]))
-    print(" ".join(map[4]))
-    print(" ".join(map[5]))
-    print(" ".join(map[6]))
-    print(" ".join(map[7]))
-    print(" ".join(map[8]))
-    print(" ".join(map[9]))
-    print(" ".join(map[10]))
+    y = 0
+    for x in map:
+        print(" ".join(map[y]))
+        y += 1
 
 def place_unit_p():
     placed = False
@@ -208,9 +201,13 @@ def ask_for_move(unit:str, movement:int):
 def attack(unit:str):
     p_targets = []
     pos_v = list(pos.values())
+    f_calls = freind_calls()
+    print(f_calls)
     for y in pos_v:
         y = list(y)
-        if map[int(y[0])][int(y[1])] != "." and map[int(y[0])][int(y[1])] not in map[0]:
+        if map[int(y[0])][int(y[1])] != "." \
+            and map[int(y[0])][int(y[1])] not in map[0]\
+                and f_calls[map[int(y[0])][int(y[1])]] not in units:
             p_targets.append(map[y[0]][y[1]])
     p_targets.append("Hold Fire")
     print("potential targets:")
@@ -220,10 +217,11 @@ def attack(unit:str):
         print("{0}. {1}".format(y, x))
     print("enter the number of your choice")
     target = select_int(MENU_MIN, len(p_targets))
+    target -= 1
+    tar = p_targets[target]
     callsigns = enemy_calls()
-    if target != len(p_targets):
+    if tar != "hold_fire":
         stats[callsigns[target]][4] -= stats[unit][0]
-    print(callsigns[target])
     return callsigns[target]
 
 def enemy_calls():
@@ -316,23 +314,14 @@ while True:
         elif x in units_e:
             print("enemy move")
         callsigns = enemy_calls()
-        print(target)
-        print('lll')
-        print(stats[target])
         if stats[target][4] <= 0:
-            #print(x)
-            print(map_f())
-            #print(x)
             if target in units:
                 remo = map.index(units[target][2])
             elif target in units_e:
                 y = 0
                 for x in map:
                     target_ddd = units_e[target][2]
-                    print("wenomechainthesama")
                     if target_ddd in x:
-                        print('tur ip ip ip')
-                        print(map[y])
                         remo = map[y].index(target_ddd)
                         map[y][remo] = "."
                         break
