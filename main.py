@@ -7,6 +7,7 @@
 from csv import unregister_dialect
 import random
 import time
+import os
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
 unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 3, 0, 10, 5]
@@ -61,7 +62,9 @@ def start():
     for x in options_2:
         y += 1
         print("{0}. {1}".format(y, x))
-    return select_int(MENU_MIN, len(options_2))
+    choice = select_int(MENU_MIN, len(options_2))
+    os.system("cls")
+    return choice
 
 def view():
     print("Here is a list of your units")
@@ -90,6 +93,7 @@ that you want to place your unit on. i.e a -> 1, b -> 2""")
             place = select_int(MENU_MIN, len(map[10])-1)
         map[10].pop(place)
         map[10].insert(place, units[x][2])
+        os.system("cls")
 
 def place_unit_e():
     place = 0
@@ -161,27 +165,15 @@ def range(unit:str):
         two = p_1 - range_2
         three = p_0 - y
         four = two
-        print(one)
-        print(two)
-        print(four)
-        print(three)
-        while four >= one:
+        while four <= one:
             cord = []
-            print(two)
-            print(four)
-            print(three)
             if four > MINI and four <= len(map[0]):
-                if three > MINI and three <= len(map) - 1:
+                if three > MINI and three <= len(map):
                     print("NUTS!?!?!?!?!")
                     cord.append(three)
                     cord.append(four)
                     print(cord)
                     in_range.append(cord)
-            time.sleep(2)
-            four += 1
-            #print(y)
-            #print(range_2)
-            #print(range)
         y += 1
         range_2 += 1
     print(in_range)
@@ -366,12 +358,14 @@ while True:
         Turn {0}
 #######################""".format(turn))
     for x in order:
-        map_f()
         if x in units:
+            map_f()
             move(units[x][2],x)
             pos = find_p()
             pos_v = list(pos.values())
             for y in pos_v:
+                os.system("cls")
+                map_f()
                 y = list(y)
                 f_calls = freind_calls()
                 f_calls = list(f_calls.values())
@@ -379,6 +373,8 @@ while True:
                     and map[int(y[0])][int(y[1])] not in map[0] \
                         and map[int(y[0])][int(y[1])] not in f_calls:
                     target = attack(x)
+                    print("b")
+                    os.system("cls")
                     stats = stat_assi()
                     break
         
