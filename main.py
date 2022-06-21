@@ -145,38 +145,44 @@ def stat_assi():
         stats[x] = statis
     return stats
 
-def range(unit:str):
-    range = stats[unit][7]
+def range_f(unit:str):
+    range_v = stats[unit][7]
+    enemys = []
     in_range = []
+    call_range = []
+    pos = find_p()
+    val = list(pos.values())
+    key = list(pos.keys())
     if unit in units:
         call = units[unit][2]
         posi = pos[call]
+        e_c = enemy_calls()
     elif unit in units_e:
         call = units_e[unit][2]
         posi = pos[call]
+        e_c = freind_calls()
     posi = list(posi)
+    calls = list(e_c.keys())
+    for x in calls:
+        x = str(x)
+        e_p = pos[x]
+        enemys.append(e_p)
     p_0 = posi[0]
     p_1 = posi[1]
-    y = 0
-    range_2 = range
-    while y <= range:
-        in_r = []
-        one = p_1 + range_2
-        two = p_1 - range_2
-        three = p_0 - y
-        four = two
-        while four <= one:
-            cord = []
-            if four > MINI and four <= len(map[0]):
-                if three > MINI and three <= len(map):
-                    print("NUTS!?!?!?!?!")
-                    cord.append(three)
-                    cord.append(four)
-                    print(cord)
-                    in_range.append(cord)
-        y += 1
-        range_2 += 1
-    print(in_range)
+    for x in enemys:
+        ep_0 = x[0]
+        ep_1 = x[1]
+        num_1 = abs(p_0 - ep_0)
+        num_2 = abs(p_1 - ep_1)
+        num = num_1 + num_2
+        if num <= range_v:
+            in_range.append(x)
+    for x in in_range:
+        ind = val.index(x)
+        call = key[ind]
+        call_range.append(call)
+    return call_range
+
 
 def find_p():
     pos ={}
@@ -251,10 +257,9 @@ def ask_move_e(unit:str, movement:int):
     hor = 100000000000000
     while pos[unit][0] - ver < 1 or pos[unit][0] - ver > 10:
         ver = random.randint(-movement, movement)
+        movement -= ver
     while pos[unit][1] - hor < 1 or pos[unit][1] - hor > 15:
-        movement_2 = ver
-        if movement_2 != movement:
-            hor = random.randint(-movement + movement_2, movement - movement_2)
+        hor = random.randint(-movement, movement)
     return ver, hor
 
 def attack(unit:str):
@@ -262,12 +267,10 @@ def attack(unit:str):
     pos_v = list(pos.values())
     f_calls = freind_calls()
     f_calls = list(f_calls.keys())
-    for y in pos_v:
-        y = list(y)
-        if map[int(y[0])][int(y[1])] != "." \
-            and map[int(y[0])][int(y[1])] not in map[0]\
-                and map[int(y[0])][int(y[1])] not in f_calls:
-                p_targets.append(map[y[0]][y[1]])
+    in_ran = range_f(unit)
+    if bool(in_ran) == True:
+        for x in in_ran:
+            p_targets.append(x)
     p_targets.append("Hold Fire")
     print("potential targets:")
     y = 0
@@ -350,7 +353,7 @@ place_unit_e()
 order = orderer()
 stats = stat_assi()
 pos = find_p()
-range('test 1')
+f_calls = freind_calls()
 # game starts
 turn = 1
 while True:
@@ -358,6 +361,7 @@ while True:
         Turn {0}
 #######################""".format(turn))
     for x in order:
+        target = None
         if x in units:
             map_f()
             move(units[x][2],x)
@@ -365,15 +369,10 @@ while True:
             pos_v = list(pos.values())
             for y in pos_v:
                 os.system("cls")
-                map_f()
-                y = list(y)
-                f_calls = freind_calls()
-                f_calls = list(f_calls.values())
-                if map[int(y[0])][int(y[1])] != "." \
-                    and map[int(y[0])][int(y[1])] not in map[0] \
-                        and map[int(y[0])][int(y[1])] not in f_calls:
+                in_ran = range_f(x)
+                if bool(in_ran) == True:
+                    map_f()
                     target = attack(x)
-                    print("b")
                     os.system("cls")
                     stats = stat_assi()
                     break
@@ -388,12 +387,15 @@ while True:
             if stats[target][4] <= 0:
                 if target in units:
                     remo = map.index(units[target][2])
+                    l = units[target][2]
                 elif target in units_e:
                     y = 0
+                    l = units_e[target][2]
                     for x in map:
                         target_ddd = units_e[target][2]
                         if target_ddd in x:
                             remo = map[y].index(target_ddd)
+                            pos.pop(l)
                             map[y][remo] = "."
                             break
                         else:
