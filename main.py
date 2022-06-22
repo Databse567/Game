@@ -157,12 +157,18 @@ def range_f(unit:str):
         call = units[unit][2]
         posi = pos[call]
         e_c = enemy_calls()
+        #print("h")
+        #print(e_c)
     elif unit in units_e:
         call = units_e[unit][2]
         posi = pos[call]
         e_c = freind_calls()
+        #print("g")
+        #print(e_c)
     posi = list(posi)
+    #print(e_c)
     calls = list(e_c.keys())
+    #print(calls)
     for x in calls:
         x = str(x)
         e_p = pos[x]
@@ -172,6 +178,7 @@ def range_f(unit:str):
     for x in enemys:
         ep_0 = x[0]
         ep_1 = x[1]
+        #print(x)
         num_1 = abs(p_0 - ep_0)
         num_2 = abs(p_1 - ep_1)
         num = num_1 + num_2
@@ -185,7 +192,7 @@ def range_f(unit:str):
 
 
 def find_p():
-    pos ={}
+    pos = {}
     units_k = list(units.keys())
     units_o = []
     units_l = list(units.values())
@@ -243,9 +250,13 @@ def move_e(unit:str, name:str):
     mob = stats[name][3]
     moves = ask_move_e(unit, mob)
     moves = list(moves)
+    e_c = enemy_calls()
+    e_k = list(e_c.keys())
     ud = position[0] - moves[0]
     lr = position[1] - moves[1]
-    if map[ud][lr] != ".":
+    while map[ud][lr] != "." and\
+        map[ud][lr] not in map[0] and\
+            map[ud][lr] not in e_k:
         moves = ask_move_e(unit, mob)
         ud = position[0] - moves[0]
         lr = position[1] - moves[1]
@@ -297,7 +308,8 @@ def enemy_calls():
     for x in list3:
         list5.append(int(x[2]))
     for x in list5:
-        callsigns[x] = list4[list5.index(x)]
+        if list4[list5.index(x)] in order:
+            callsigns[x] = list4[list5.index(x)]
     return callsigns
 
 def freind_calls():
@@ -361,9 +373,14 @@ while True:
         Turn {0}
 #######################""".format(turn))
     for x in order:
+        #print(order)
+        #print(units)
+        #print(units_e)
+        #print(pos)
         target = None
         if x in units:
             map_f()
+            target = None
             move(units[x][2],x)
             pos = find_p()
             pos_v = list(pos.values())
@@ -379,6 +396,7 @@ while True:
         
         elif x in units_e:
             print("enemy move")
+            target = None
             move_e(units_e[x][2], x)
             pos = find_p()
 
@@ -388,6 +406,18 @@ while True:
                 if target in units:
                     remo = map.index(units[target][2])
                     l = units[target][2]
+                    for x in map:
+                        target_ddd = units[target][2]
+                        if target_ddd in x:
+                            remo = map[y].index(target_ddd)
+                            print("KKKKKKKKKK")
+                            pos.pop(l)
+                            order.pop(target)
+                            units.pop(target)
+                            map[y][remo] = "."
+                            break
+                        else:
+                            y += 1
                 elif target in units_e:
                     y = 0
                     l = units_e[target][2]
@@ -395,7 +425,10 @@ while True:
                         target_ddd = units_e[target][2]
                         if target_ddd in x:
                             remo = map[y].index(target_ddd)
+                            print("HHHHHHHHH")
                             pos.pop(l)
+                            order.pop(target)
+                            units_e.pop(target)
                             map[y][remo] = "."
                             break
                         else:
