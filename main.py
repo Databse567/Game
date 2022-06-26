@@ -8,6 +8,7 @@ from csv import unregister_dialect
 import random
 import time
 import os
+import keyboard
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
 unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 3, 0, 10, 5]
@@ -170,12 +171,10 @@ def range_f(unit:str):
     p_0 = posi[0]
     p_1 = posi[1]
     e_c = enemy_calls()
-    find_p()
-    #for x in e_c:
+    pos = find_p()
     for x in enemys:
         ep_0 = x[0]
         ep_1 = x[1]
-        #print(x)
         num_1 = abs(p_0 - ep_0)
         num_2 = abs(p_1 - ep_1)
         num = num_1 + num_2
@@ -276,42 +275,41 @@ def attack(unit:str):
     f_calls = freind_calls()
     f_calls = list(f_calls.keys())
     in_ran = range_f(unit)
+    stats = stat_assi()
     if bool(in_ran) == True:
         for x in in_ran:
             p_targets.append(x)
-    p_targets.append("Hold Fire")
-    print("potential targets:")
-    y = 0
-    for x in p_targets:
-        y += 1
-        print("{0}. {1}".format(y, x))
-    print("enter the number of your choice")
-    target = select_int(MENU_MIN, len(p_targets))
-    target -= 1
-    tar = p_targets[target]
-    callsigns = enemy_calls()
-    if tar != "Hold Fire":
-        stats[callsigns[int(tar)]][4] -= stats[unit][0]
-        return callsigns[int(tar)]
-    else:
-        print("Fire held")
-        return None
+        p_targets.append("Hold Fire")
+        print("potential targets:")
+        y = 0
+        for x in p_targets:
+            y += 1
+            print("{0}. {1}".format(y, x))
+        print("enter the number of your choice")
+        target = select_int(MENU_MIN, len(p_targets))
+        target -= 1
+        tar = p_targets[target]
+        callsigns = enemy_calls()
+        if tar != "Hold Fire":
+            stats[callsigns[int(tar)]][4] -= stats[unit][0]
+            return callsigns[int(tar)]
+        else:
+            print("Fire held")
+            return None
 
 def attack_e(unit:str):
     p_targets = []
-    f_calls = freind_calls()
-    f_calls = list(f_calls.keys())
+    stats = stat_assi()
     in_ran = range_f(unit)
     if bool(in_ran) == True:
         for x in in_ran:
             p_targets.append(x)
-        y = 0
         target = random.randint(MENU_MIN, len(p_targets))
         target -= 1
         tar = p_targets[target]
-        callsigns = enemy_calls()
-        stats[callsigns[int(tar)]][4] -= stats[unit][0]
-        return callsigns[int(tar)]
+        callsigns = freind_calls()
+        stats[callsigns[tar]][4] -= stats[unit][0]
+        return callsigns[tar]
 
 def enemy_calls():
     list3 = list(units_e.values())
@@ -385,37 +383,38 @@ while True:
     print("""#######################
         Turn {0}
 #######################""".format(turn))
-    for x in order:
-        #print(order)
+    for u_turn in order:
+        print(order)
+        print(u_turn)
         #print(units)
         #print(units_e)
         #print(pos)
         target = None
-        if x in units:
+        if u_turn in units:
             map_f()
             target = None
-            move(units[x][2],x)
+            move(units[u_turn][2],u_turn)
             pos = find_p()
             pos_v = list(pos.values())
             os.system("cls")
-            in_ran = range_f(x)
+            in_ran = range_f(u_turn)
             if bool(in_ran) == True:
                 map_f()
-                target = attack(x)
+                target = attack(u_turn)
                 os.system("cls")
                 stats = stat_assi()
                 break
         
-        elif x in units_e:
+        elif u_turn in units_e:
             target = None
-            move_e(units_e[x][2], x)
+            move_e(units_e[u_turn][2], u_turn)
             pos = find_p()
             pos_v = list(pos.values())
             os.system("cls")
-            in_ran = range_f(x)
+            in_ran = range_f(u_turn)
             if bool(in_ran) == True:
                 map_f()
-                target = attack_e(x)
+                target = attack_e(u_turn)
                 os.system("cls")
                 stats = stat_assi()
                 break
