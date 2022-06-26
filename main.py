@@ -457,3 +457,4 @@ while True:
                     print("oops")
     pos = find_p()
     turn += 1
+print("End")
