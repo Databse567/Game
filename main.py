@@ -157,24 +157,21 @@ def range_f(unit:str):
         call = units[unit][2]
         posi = pos[call]
         e_c = enemy_calls()
-        #print("h")
-        #print(e_c)
     elif unit in units_e:
         call = units_e[unit][2]
         posi = pos[call]
         e_c = freind_calls()
-        #print("g")
-        #print(e_c)
     posi = list(posi)
-    #print(e_c)
     calls = list(e_c.keys())
-    #print(calls)
     for x in calls:
         x = str(x)
         e_p = pos[x]
         enemys.append(e_p)
     p_0 = posi[0]
     p_1 = posi[1]
+    e_c = enemy_calls()
+    find_p()
+    #for x in e_c:
     for x in enemys:
         ep_0 = x[0]
         ep_1 = x[1]
@@ -300,6 +297,22 @@ def attack(unit:str):
         print("Fire held")
         return None
 
+def attack_e(unit:str):
+    p_targets = []
+    f_calls = freind_calls()
+    f_calls = list(f_calls.keys())
+    in_ran = range_f(unit)
+    if bool(in_ran) == True:
+        for x in in_ran:
+            p_targets.append(x)
+        y = 0
+        target = random.randint(MENU_MIN, len(p_targets))
+        target -= 1
+        tar = p_targets[target]
+        callsigns = enemy_calls()
+        stats[callsigns[int(tar)]][4] -= stats[unit][0]
+        return callsigns[int(tar)]
+
 def enemy_calls():
     list3 = list(units_e.values())
     list4 = list(units_e.keys())
@@ -384,21 +397,28 @@ while True:
             move(units[x][2],x)
             pos = find_p()
             pos_v = list(pos.values())
-            for y in pos_v:
+            os.system("cls")
+            in_ran = range_f(x)
+            if bool(in_ran) == True:
+                map_f()
+                target = attack(x)
                 os.system("cls")
-                in_ran = range_f(x)
-                if bool(in_ran) == True:
-                    map_f()
-                    target = attack(x)
-                    os.system("cls")
-                    stats = stat_assi()
-                    break
+                stats = stat_assi()
+                break
         
         elif x in units_e:
-            print("enemy move")
             target = None
             move_e(units_e[x][2], x)
             pos = find_p()
+            pos_v = list(pos.values())
+            os.system("cls")
+            in_ran = range_f(x)
+            if bool(in_ran) == True:
+                map_f()
+                target = attack_e(x)
+                os.system("cls")
+                stats = stat_assi()
+                break
 
         callsigns = enemy_calls()
         if target != None:
