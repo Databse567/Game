@@ -31,7 +31,21 @@ map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 ["i", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
 ["j", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]]
 # Text blocks: Move to a json or something at some point
-instructions = {"Movement": [], "Attacking": [], "Placement": []}
+instructions = {"Placement": ["After going through the initial menus, you will come to a screen that looks like this:" #print map_f()
+, "This screen will prompt you to place your units. To place a unit, you will need to enter in a number. Each letter",
+"corresponds to a number. e.g a = 1, b = 2, c = 3 and so on. Once you enter this, your unit will place, showing up as",
+"a capital letter, such as 'A'. You will then be prompted to palce your next following the same process until all of",
+"your units have been placed."], 
+"Movement": ["After your units have been placed, you will come to another screen like this:" #print map_f()
+, "This screen will prompt you to enter in a direction. This direction could be up, right, left or down."
+, #"Right now, your movement keys are {0} for up, {1} for left, {2} for down, {3} for right and {4} to stop", Have this as a seperate print statement
+"Each unit can move a certain amount of times. Once the unit has moved its max amount of squares, or the"
+, "player stops it moveing, the unit can attack if there is something to shoot."], 
+"Attacking": ["After moveing a unit, if an enemy unit is in range of your unit, you may shoot it.",
+"Each unit has set amount of range, damage and health. A units range dictates if it can shoot something.",
+"A units attack determines how much damge it will do and its health how damage much it can take.",
+"When attacking, a menu will appear with all the units you could shoot. Each will have a number next",
+"to it. To select that option, enter in the number next to it. The game will then procced."]}
 MINI = 0
 MENU_MIN = 1 
 go = False
@@ -362,7 +376,6 @@ def freind_calls():
     for x in list5:
         callsigns[x] = list4[list5.index(x)]
     return callsigns
-
 
 def summary():
     print("summary")
