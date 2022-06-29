@@ -8,9 +8,9 @@ from csv import unregister_dialect
 import random
 import time
 import os
-import keyboard
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
+direction = ["W", "A", "S", "D", "Q"]
 unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 3, 0, 10, 5]
 , "Light Armour": [15, 6, "Mobile", 5, 7, 4, 7, 1]}
 # key: Unit Type: Attack, Defence, Ability, Mobility, Health, Armour, Penetration, Range
@@ -30,6 +30,8 @@ map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 ["h", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
 ["i", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
 ["j", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]]
+# Text blocks: Move to a json or something at some point
+instructions = {"Movement": [], "Attacking": [], "Placement": []}
 MINI = 0
 MENU_MIN = 1 
 go = False
@@ -208,38 +210,65 @@ def find_p():
     return pos
 
 def move(unit:str, name:str):
+    pos = find_p()
     position = list(pos[unit])
     mob = stats[name][3]
+    keep_moveing = "Y"
     print("""Unit {0} is at {1}. They can move {2} sqaures.
-you will be asked to provide a left/right move and then an up/down move.
-Right and down are negative, Up and left are positives."""
+You will be asked to input a direction 
+W for up, A for left S for down and D for right
+The unit will move this direction and ask again until you stop it
+moveing or run out of movement. Enter Q to halt unit."""
           .format(name, pos[unit], mob))
-    moves = ask_for_move(unit, mob)
-    moves = list(moves)
-    ud = position[0] - moves[0]
-    lr = position[1] - moves[1]
-    if map[ud][lr] != ".":
-        print("Space occupied")
-        moves = ask_for_move(unit, mob)
-        ud = position[0] - moves[0]
-        lr = position[1] - moves[1]
-    map[ud][lr] = unit
-    map[position[0]][position[1]] = "."
+    while mob != 0:
+        pos = find_p()
+        position = list(pos[unit])
+        move = ask_for_move()
+        move_2 = move_how(move)
+        ud = position[0]
+        lr = position[1]
+        if move == "W" or move == "S":
+            ud += move_2
+        elif move == "A" or move == "D":
+            lr += move_2
+        elif move == "Q":
+            break
+        try:
+            while map[ud][lr] != ".":
+                print("Space occupied")
+                move = ask_for_move()
+                move_2 = move_how(move)
+                ud = position[0]
+                lr = position[1]
+                if move == "W" or move == "S":
+                    ud += move_2
+                elif move == "A" or move == "D":
+                    lr += move_2
+            map[ud][lr] = unit
+            map[position[0]][position[1]] = "."
+            mob -= 1
+            pos = find_p()
+            position = list(pos[unit])
+            os.system("cls")
+            map_f()
+            print("Unit {0} is at {1}. They can move {2} sqaures.".format(name, pos[unit], mob))
+        except:
+            print("That would be deserting")
 
-def ask_for_move(unit:str, movement:int):
-    ver = 100000000000000
-    hor = 100000000000000
-    print("Vertical:")
-    while pos[unit][0] - ver < 1 or pos[unit][0] - ver > 10:
-        ver = select_int(-movement, movement)
-        if pos[unit][0] - ver < 1 or pos[unit][0] - ver > 10:
-            print("that would be deserting")
-    print("Horizontal:")
-    while pos[unit][1] - hor < 1 or pos[unit][1] - hor > 15:
-        hor = select_int(-movement + ver, movement - ver)
-        if pos[unit][1] - hor < 1 or pos[unit][1] - hor > 15:
-            print("that would be deserting")
-    return ver, hor
+def ask_for_move():
+    choice = "B"
+    while choice not in direction:
+        try:
+            choice = input("Please input a direction: ").upper()
+        except:
+            print("Brokie")
+    return choice
+
+def move_how(direct:str):
+    if direct == "W" or direct == "A":
+        return -1
+    elif direct == "D" or direct == "S":
+        return 1
 
 def move_e(unit:str, name:str):
     position = list(pos[unit])
@@ -377,15 +406,16 @@ order = orderer()
 stats = stat_assi()
 pos = find_p()
 f_calls = freind_calls()
-# game starts
+e_c = enemy_calls()
+# game startss
 turn = 1
 while True:
     print("""#######################
         Turn {0}
 #######################""".format(turn))
     for u_turn in order:
-        print(order)
-        print(u_turn)
+        #print(order)
+        #print(u_turn)
         #print(units)
         #print(units_e)
         #print(pos)
@@ -403,7 +433,6 @@ while True:
                 target = attack(u_turn)
                 os.system("cls")
                 stats = stat_assi()
-                break
         
         elif u_turn in units_e:
             target = None
@@ -417,43 +446,50 @@ while True:
                 target = attack_e(u_turn)
                 os.system("cls")
                 stats = stat_assi()
-                break
 
         callsigns = enemy_calls()
         if target != None:
             if stats[target][4] <= 0:
                 if target in units:
-                    remo = map.index(units[target][2])
-                    l = units[target][2]
-                    for x in map:
-                        target_ddd = units[target][2]
-                        if target_ddd in x:
-                            remo = map[y].index(target_ddd)
-                            print("KKKKKKKKKK")
-                            pos.pop(l)
-                            order.pop(target)
-                            units.pop(target)
-                            map[y][remo] = "."
-                            break
-                        else:
-                            y += 1
+                    dead = units[target][2]
                 elif target in units_e:
-                    y = 0
-                    l = units_e[target][2]
-                    for x in map:
-                        target_ddd = units_e[target][2]
-                        if target_ddd in x:
-                            remo = map[y].index(target_ddd)
-                            print("HHHHHHHHH")
-                            pos.pop(l)
-                            order.pop(target)
-                            units_e.pop(target)
-                            map[y][remo] = "."
-                            break
-                        else:
-                            y += 1
-                else:
-                    print("oops")
+                    dead = units_e[target][2]
+                pos = find_p()
+                position = list(pos[dead])
+                del pos[dead]
+                order.remove(target)
+                e_c = enemy_calls()
+                f_c = freind_calls()
+                e_c = list(e_c.values())
+                f_c = list(f_c.values())
+                map[position[0]][position[1]] = "."
+                useless = False
+                useless_2 = False
+                for x in order:
+                    if x in e_c:
+                        useless = True
+                    elif x in f_c:
+                        useless_2 = True
+                    else:
+                        g = 'g'
+            if useless == False or useless_2 == False:
+                break
+    e_c = enemy_calls()
+    f_c = freind_calls()
+    e_c = list(e_c.values())
+    f_c = list(f_c.values())
+    for x in order:
+        if x in e_c:
+            useless = True
+        elif x in f_c:
+            useless_2 = True
+        else:
+            g = 'g'
+    if target != None:
+        if stats[target][4] <= 0:
+            if useless == False or useless_2 == False:
+                break
     pos = find_p()
     turn += 1
-print("End")
+if useless == False:
+    print("winner")
