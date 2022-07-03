@@ -10,6 +10,7 @@ import time
 import os
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
+settings_o =["Bindings", "Cancel"]
 direction = ["W", "A", "S", "D", "Q"]
 unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 3, 0, 10, 5]
 , "Light Armour": [15, 6, "Mobile", 5, 7, 4, 7, 1]}
@@ -31,14 +32,16 @@ map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 ["i", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
 ["j", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]]
 # Text blocks: Move to a json or something at some point
-instructions = {"Placement": ["After going through the initial menus, you will come to a screen that looks like this:" #print map_f()
+instructions = {"Placement": ["After going through the initial menus, you will come to a screen that looks like this:" 
+,"print map_f()"
 , "This screen will prompt you to place your units. To place a unit, you will need to enter in a number. Each letter",
 "corresponds to a number. e.g a = 1, b = 2, c = 3 and so on. Once you enter this, your unit will place, showing up as",
 "a capital letter, such as 'A'. You will then be prompted to palce your next following the same process until all of",
 "your units have been placed."], 
-"Movement": ["After your units have been placed, you will come to another screen like this:" #print map_f()
+"Movement": ["After your units have been placed, you will come to another screen like this:"
+,"print map_f()"
 , "This screen will prompt you to enter in a direction. This direction could be up, right, left or down."
-, #"Right now, your movement keys are {0} for up, {1} for left, {2} for down, {3} for right and {4} to stop", Have this as a seperate print statement
+, "Right now, your movement keys are {0} for up, {1} for left, {2} for down, {3} for right and {4} to stop".format(direction[0], direction[1], direction[2], direction[3], direction[4]),
 "Each unit can move a certain amount of times. Once the unit has moved its max amount of squares, or the"
 , "player stops it moveing, the unit can attack if there is something to shoot."], 
 "Attacking": ["After moveing a unit, if an enemy unit is in range of your unit, you may shoot it.",
@@ -69,6 +72,17 @@ def select_int(min:int, max:int):
             break
         except:
             print("Enter a full number")
+    return choice
+
+def select_yn():
+    choice = "b"
+    while True:
+        try:
+            while choice != "Y" and choice != "N":
+                choice = input("Yes(Y) or No(N): ").upper()
+            break
+        except:
+            print("Enter yes or no")
     return choice
 
 def start():
@@ -380,11 +394,37 @@ def freind_calls():
 def summary():
     print("summary")
 
-def instructions():
-    print('instructions')
+def instructions_f():
+    print("Welcome to the instructions place!") # Needs new name
+    while True:
+        y = 0
+        ins = list(instructions.keys())
+        for x in instructions:
+            y += 1
+            print("{0}. {1}".format(y, x))
+        choice = select_int(MENU_MIN, len(instructions))
+        choice -= 1
+        pick = ins[choice]
+        for x in instructions[pick]:
+            if x != "print map_f()":
+                print("• {0}".format(x))
+            else:
+                map_f()
+        cont = select_yn()
+        if cont == "N":
+            break
+    os.system("cls")
 
 def settings():
-    print('settings')
+    print("Welcome to the settings place!") # Needs new name
+    while True:
+        y = 0
+        for x in settings_o:
+            y += 1
+            print("{0}. {1}".format(y, x))
+        choice = select_int(MENU_MIN, len(settings))
+        if choice == 1:
+            print("Shange binding.")
 
 # code
 while go is not True:
@@ -392,7 +432,7 @@ while go is not True:
     if choice == 1:
         go = True
     elif choice == 2:
-        instructions()
+        instructions_f()
     elif choice == 3:
         settings()
     elif choice == 4:
