@@ -10,15 +10,17 @@ import time
 import os
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
-settings_o =["Bindings", "Cancel"]
-direction = ["W", "A", "S", "D", "Q"]
+settings_o =["Controls", "Cancel"]
+direction = {"Forward": "W", "Left": "A", "Back": "S", "Right": "D", "Stop": "Q"}
 unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 3, 0, 10, 5]
-, "Light Armour": [15, 6, "Mobile", 5, 7, 4, 7, 1]}
+, "Light Armour": [15, 6, "Mobile", 5, 7, 4, 7, 1], "Medium Armour": [20, 2, "Threatening", 3, 9, 8, 8, 2]
+,"Special Forces": [10, 10, "Anti-tank", 4, 5, 0, 9, 3]}
 # key: Unit Type: Attack, Defence, Ability, Mobility, Health, Armour, Penetration, Range
-units = {"test 1": ["Infantry", 5, "A"], "test 2": ["Artillery", 2, "B"]
-, "test 3": ["Light Armour", 7, "C"]}
+units = {"1st (African) Division": ["Infantry", 5, "A"], "1st Field Regiment, Royal Artillery": ["Artillery", 2, "B"]
+, "2nd Armour Division(Light detachment)": ["Light Armour", 7, "C"], "2nd Armour Division": ["Medium Armour", 6, "D"],
+"Royal Marines Division": ["Special Forces", 6, "E"]}
 units_e = {"test 1_e": ["Infantry", 4, "1"], "test 2_e": ["Artillery", 1, "2"]
-, "test 3_e": ["Light Armour", 6, "3"]}
+, "test 3_e": ["Light Armour", 6, "3"], "test 4_e": ["Medium Armour", 6, "4"], "test 5_e": ["Special Forces", 6, "5"]}
 # key: Unit name: Unit type, Manpower, Equipment, Strength, Movement
 map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"],
 ["a", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
@@ -41,7 +43,8 @@ instructions = {"Placement": ["After going through the initial menus, you will c
 "Movement": ["After your units have been placed, you will come to another screen like this:"
 ,"print map_f()"
 , "This screen will prompt you to enter in a direction. This direction could be up, right, left or down."
-, "Right now, your movement keys are {0} for up, {1} for left, {2} for down, {3} for right and {4} to stop".format(direction[0], direction[1], direction[2], direction[3], direction[4]),
+, "Right now, your movement keys are {0} for up, {1} for left, {2} for down, {3} for right and {4} to stop"
+.format(direction["Forward"], direction["Left"], direction["Back"], direction["Right"], direction["Stop"]),
 "Each unit can move a certain amount of times. Once the unit has moved its max amount of squares, or the"
 , "player stops it moveing, the unit can attack if there is something to shoot."], 
 "Attacking": ["After moveing a unit, if an enemy unit is in range of your unit, you may shoot it.",
@@ -244,23 +247,28 @@ def move(unit:str, name:str):
     keep_moveing = "Y"
     print("""Unit {0} is at {1}. They can move {2} sqaures.
 You will be asked to input a direction 
-W for up, A for left S for down and D for right
+{3} for up, {4} for left {5} for down and {6} for right
 The unit will move this direction and ask again until you stop it
-moveing or run out of movement. Enter Q to halt unit."""
-          .format(name, pos[unit], mob))
+moveing or run out of movement. Enter {7} to halt unit."""
+          .format(name, pos[unit], mob, direction["Forward"], direction["Left"], direction["Back"], direction["Right"], direction["Stop"]))
     while mob != 0:
         pos = find_p()
+        move = "kilomenjaro"
         position = list(pos[unit])
         move = ask_for_move()
         move_2 = move_how(move)
         ud = position[0]
         lr = position[1]
-        if move == "W" or move == "S":
-            ud += move_2
-        elif move == "A" or move == "D":
-            lr += move_2
-        elif move == "Q":
-            break
+        p_dir = list(direction.values())
+        while move not in p_dir:
+            move = ask_for_move()
+            move_2 = move_how(move)
+            if move == direction["Forward"] or move == direction["Left"]:
+                ud += move_2
+            elif move == direction["Right"] or move == direction["Back"]:
+                lr += move_2
+            elif move == direction["Stop"]:
+                break
         try:
             while map[ud][lr] != ".":
                 print("Space occupied")
@@ -268,9 +276,9 @@ moveing or run out of movement. Enter Q to halt unit."""
                 move_2 = move_how(move)
                 ud = position[0]
                 lr = position[1]
-                if move == "W" or move == "S":
+                if move == direction["Forward"] or move == direction["Left"]:
                     ud += move_2
-                elif move == "A" or move == "D":
+                elif move == direction["Right"] or move == direction["Back"]:
                     lr += move_2
             map[ud][lr] = unit
             map[position[0]][position[1]] = "."
@@ -293,9 +301,9 @@ def ask_for_move():
     return choice
 
 def move_how(direct:str):
-    if direct == "W" or direct == "A":
+    if direct == direction["Forward"] or direct == direction["Left"]:
         return -1
-    elif direct == "D" or direct == "S":
+    elif direct == direction["Back"] or direct == direction["Right"]:
         return 1
 
 def move_e(unit:str, name:str):
@@ -410,6 +418,7 @@ def instructions_f():
                 print("• {0}".format(x))
             else:
                 map_f()
+        print("Do you want more instructions?")
         cont = select_yn()
         if cont == "N":
             break
@@ -422,9 +431,38 @@ def settings():
         for x in settings_o:
             y += 1
             print("{0}. {1}".format(y, x))
-        choice = select_int(MENU_MIN, len(settings))
+        choice = select_int(MENU_MIN, len(settings_o))
         if choice == 1:
-            print("Shange binding.")
+            c_binds()
+        else:
+            break
+    os.system("cls")
+
+def c_binds():
+    print("Change Key Bindings here!")
+    keys = list(direction.keys())
+    values = list(direction.values())
+    y = 0
+    for x in keys:
+        y += 1
+        print("{0}. {1}".format(y, x))
+    print("Select the number of the key you want to change")
+    change = select_int(MENU_MIN, len(keys))
+    change -= 1
+    new_bind = "gg"
+    while True:
+        new_bind = input("Please enter in the new key to move {0}: ".format(keys[change]))
+        try:
+            new_bind.upper()
+        except:
+            useless = "Bornana"
+        if len(new_bind) == 1:
+            break
+        else:
+            print("Enter only one letter")
+    changed = keys[change]
+    print("The key for {0} was changed to {1}".format(changed, new_bind))
+    direction[changed] = new_bind
 
 # code
 while go is not True:
