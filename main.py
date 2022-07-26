@@ -10,7 +10,8 @@ import time
 import os
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
-settings_o =["Controls", "Cancel"]
+settings_o = ["Controls", "Cancel"]
+features = {"~":"Water", "■":"Cliff","Ð":"Dune"}
 direction = {"Forward": "W", "Left": "A", "Back": "S", "Right": "D", "Stop": "Q"}
 unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 3, 0, 10, 5]
 , "Light Armour": [15, 6, "Mobile", 5, 7, 4, 7, 1], "Medium Armour": [20, 2, "Threatening", 3, 9, 8, 8, 2]
@@ -28,7 +29,7 @@ map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 ["c", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
 ["d", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
 ["e", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
-["f", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["f", ".", "Ð", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
 ["g", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
 ["h", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
 ["i", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
@@ -235,7 +236,7 @@ def find_p():
     for x in map:
         for y in x:
             y = str(y)
-            if y != "." and y not in map[0]:
+            if y != "." and y not in map[0] and y not in features:
                 a = x.index(y)
                 pos[y] = map.index(x), a
     return pos
@@ -259,16 +260,16 @@ moveing or run out of movement. Enter {7} to halt unit."""
         move_2 = move_how(move)
         ud = position[0]
         lr = position[1]
-        p_dir = list(direction.values())
-        while move not in p_dir:
-            move = ask_for_move()
-            move_2 = move_how(move)
-            if move == direction["Forward"] or move == direction["Left"]:
-                ud += move_2
-            elif move == direction["Right"] or move == direction["Back"]:
-                lr += move_2
-            elif move == direction["Stop"]:
-                break
+        move = ask_for_move()
+        move_2 = move_how(move)
+        if move == direction["Forward"] or move == direction["Left"]:
+            ud += move_2
+        elif move == direction["Right"] or move == direction["Back"]:
+            lr += move_2
+        elif move == direction["Stop"]:
+            break
+        pos = find_p()
+        position = list(pos[unit])
         try:
             while map[ud][lr] != ".":
                 print("Space occupied")
@@ -276,9 +277,9 @@ moveing or run out of movement. Enter {7} to halt unit."""
                 move_2 = move_how(move)
                 ud = position[0]
                 lr = position[1]
-                if move == direction["Forward"] or move == direction["Left"]:
+                if move == direction["Forward"] or move == direction["Back"]:
                     ud += move_2
-                elif move == direction["Right"] or move == direction["Back"]:
+                elif move == direction["Right"] or move == direction["Left"]:
                     lr += move_2
             map[ud][lr] = unit
             map[position[0]][position[1]] = "."
@@ -293,7 +294,8 @@ moveing or run out of movement. Enter {7} to halt unit."""
 
 def ask_for_move():
     choice = "B"
-    while choice not in direction:
+    dir_val = list(direction.values())
+    while choice not in dir_val:
         try:
             choice = input("Please input a direction: ").upper()
         except:
