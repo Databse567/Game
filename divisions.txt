@@ -25,3 +25,11 @@ British Armour:
 British Special Forces:
 Royal Marines Division
 1st Airborne Division
+British Artillery:
+1st Field Regiment, Royal Artillery
+2nd Field Regiment, Royal Artillery
+3rd Field Regiment, Royal Artillery
+4th Field Regiment, Royal Artillery
+5th Field Regiment, Royal Artillery
+6th Field Regiment, Royal Artillery
+7th Field Regiment, Royal Artillery
