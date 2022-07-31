@@ -4,6 +4,7 @@
 # portfolio.py
 # gameing
 # variables, imports, constants etc.
+from ast import Break
 from csv import unregister_dialect
 import random
 import time
@@ -17,22 +18,22 @@ unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 
 , "Light Armour": [15, 6, "Mobile", 5, 7, 4, 7, 1], "Medium Armour": [20, 2, "Threatening", 3, 9, 8, 8, 2]
 ,"Special Forces": [10, 10, "Anti-tank", 4, 5, 0, 9, 3]}
 # key: Unit Type: Attack, Defence, Ability, Mobility, Health, Armour, Penetration, Range
-units = {"1st (African) Division": ["Infantry", 5, "A"], "1st Field Regiment, Royal Artillery": ["Artillery", 2, "B"]
-, "2nd Armour Division(Light detachment)": ["Light Armour", 7, "C"], "2nd Armour Division": ["Medium Armour", 6, "D"],
-"Royal Marines Division": ["Special Forces", 6, "E"]}
-units_e = {"test 1_e": ["Infantry", 4, "1"], "test 2_e": ["Artillery", 1, "2"]
-, "test 3_e": ["Light Armour", 6, "3"], "test 4_e": ["Medium Armour", 6, "4"], "test 5_e": ["Special Forces", 6, "5"]}
-# key: Unit name: Unit type, Manpower, Equipment, Strength, Movement
+units = {"1st (African) Division": ["Infantry", 4, "A"], "1st Field Regiment, Royal Artillery": ["Artillery", 2, "B"]
+, "2nd Armour Division(Light detachment)": ["Light Armour", 10, "C"], "2nd Armour Division": ["Medium Armour", 6, "D"],
+"Royal Marines Division": ["Special Forces", 8, "E"]}
+units_e = {"test 1_e": ["Infantry", 3, "1"], "test 2_e": ["Artillery", 1, "2"]
+, "test 3_e": ["Light Armour", 9, "3"], "test 4_e": ["Medium Armour", 5, "4"], "test 5_e": ["Special Forces", 7, "5"]}
+# key: Unit name: Unit type, Inititive, Callsign
 map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"],
 ["a", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
 ["b", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
-["c", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
-["d", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
-["e", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
-["f", ".", "Ð", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
-["g", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
-["h", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
-["i", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["c", ".", ".", ".", ".", ".", ".", ".", "Ð", ".", ".", ".", ".", ".", ".", "."],
+["d", ".", ".", ".", ".", ".", ".", ".", ".", "Ð", ".", ".", ".", ".", ".", "."],
+["e", ".", ".", "Ð", "Ð", "Ð", ".", ".", ".", ".", "Ð", "Ð", ".", ".", ".", "."],
+["f", ".", "Ð", ".", ".", ".", "Ð", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["g", ".", ".", ".", ".", ".", ".", "Ð", ".", ".", ".", ".", ".", "Ð", "Ð", "."],
+["h", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "Ð", "Ð", ".", ".", "."],
+["i", ".", ".", ".", ".", ".", ".", ".", ".", ".", "Ð", ".", ".", ".", ".", "."],
 ["j", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."]]
 # Text blocks: Move to a json or something at some point
 instructions = {"Placement": ["After going through the initial menus, you will come to a screen that looks like this:" 
@@ -153,16 +154,20 @@ def orderer():
         val_e.append(x[1])
     y = 0
     for x in units_k:
-        turn_order[val[y]] = x
+        turn_order[x] = val[y]
         y += 1
     y = 0
     for x in units_e_k:
-        turn_order[val_e[y]] = x
+        turn_order[x] = val_e[y]
         y += 1
+    vals_1 = list(turn_order.values())
+    vals_1.sort(reverse = True)
+    vals_2 = list(turn_order.values())
     keys = list(turn_order.keys())
-    keys.sort(reverse = True)
-    for x in keys:
-        turns.append(turn_order[x])
+    for x in vals_1:
+        ind = vals_2.index(x)
+        turn = keys[ind]
+        turns.append(turn)
     return turns
 
 def stat_assi():
@@ -256,36 +261,22 @@ moveing or run out of movement. Enter {7} to halt unit."""
         pos = find_p()
         move = "kilomenjaro"
         position = list(pos[unit])
-        move = ask_for_move()
-        move_2 = move_how(move)
-        ud = position[0]
-        lr = position[1]
-        move = ask_for_move()
-        move_2 = move_how(move)
-        if move == direction["Forward"] or move == direction["Left"]:
-            ud += move_2
-        elif move == direction["Right"] or move == direction["Back"]:
-            lr += move_2
-        elif move == direction["Stop"]:
-            break
-        pos = find_p()
-        position = list(pos[unit])
         try:
-            while map[ud][lr] != ".":
-                print("Space occupied")
+            while True:
                 move = ask_for_move()
-                move_2 = move_how(move)
-                ud = position[0]
-                lr = position[1]
-                if move == direction["Forward"] or move == direction["Back"]:
-                    ud += move_2
-                elif move == direction["Right"] or move == direction["Left"]:
-                    lr += move_2
-            map[ud][lr] = unit
-            map[position[0]][position[1]] = "."
-            mob -= 1
-            pos = find_p()
-            position = list(pos[unit])
+                cords = move_how(move, unit)
+                if cords == "stop":
+                    mob = 0
+                    break
+                pos = find_p()
+                position = list(pos[unit])
+                if map[cords[0]][cords[1]] == ".":
+                    map[cords[0]][cords[1]] = unit
+                    map[position[0]][position[1]] = "."
+                    mob -= 1
+                    break
+                else:
+                    print("Space occupied")
             os.system("cls")
             map_f()
             print("Unit {0} is at {1}. They can move {2} sqaures.".format(name, pos[unit], mob))
@@ -293,7 +284,7 @@ moveing or run out of movement. Enter {7} to halt unit."""
             print("That would be deserting")
 
 def ask_for_move():
-    choice = "B"
+    choice = "Bobux?"
     dir_val = list(direction.values())
     while choice not in dir_val:
         try:
@@ -302,11 +293,25 @@ def ask_for_move():
             print("Brokie")
     return choice
 
-def move_how(direct:str):
+def move_how(direct:str, unit:str):
+    cords = []
+    pos = find_p()
+    position = list(pos[unit])
+    ud = position[0]
+    lr = position[1]
     if direct == direction["Forward"] or direct == direction["Left"]:
-        return -1
+        move_2 = -1
     elif direct == direction["Back"] or direct == direction["Right"]:
-        return 1
+        move_2 = 1
+    if direct == direction["Forward"] or direct == direction["Back"]:
+        ud += move_2
+    elif direct == direction["Right"] or direct == direction["Left"]:
+        lr += move_2
+    elif direct == direction["Stop"]:
+        return "stop"
+    cords.append(ud)
+    cords.append(lr)
+    return cords
 
 def move_e(unit:str, name:str):
     position = list(pos[unit])
@@ -398,7 +403,8 @@ def freind_calls():
     for x in list3:
         list5.append(x[2])
     for x in list5:
-        callsigns[x] = list4[list5.index(x)]
+        if list4[list5.index(x)] in order:
+            callsigns[x] = list4[list5.index(x)]
     return callsigns
 
 def summary():
@@ -500,7 +506,7 @@ stats = stat_assi()
 pos = find_p()
 f_calls = freind_calls()
 e_c = enemy_calls()
-# game startss
+# game starts
 turn = 1
 while True:
     print("""#######################
