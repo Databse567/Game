@@ -6,6 +6,7 @@
 # variables, imports, constants etc.
 from ast import Break
 from csv import unregister_dialect
+from maps import *
 import random
 import time
 import os
@@ -22,7 +23,7 @@ units = {"1st (African) Division": ["Infantry", 4, "A"], "1st Field Regiment, Ro
 , "2nd Armour Division(Light detachment)": ["Light Armour", 10, "C"], "2nd Armour Division": ["Medium Armour", 6, "D"],
 "Royal Marines Division": ["Special Forces", 8, "E"]}
 units_e = {"test 1_e": ["Infantry", 3, "1"], "test 2_e": ["Artillery", 1, "2"]
-, "test 3_e": ["Light Armour", 9, "3"], "test 4_e": ["Medium Armour", 5, "4"], "test 5_e": ["Special Forces", 7, "5"]}
+, "test 3_e": ["Light Armour", 10, "3"], "test 4_e": ["Medium Armour", 5, "4"], "test 5_e": ["Special Forces", 7, "5"]}
 # key: Unit name: Unit type, Inititive, Callsign
 map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"],
 ["a", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
@@ -142,33 +143,33 @@ def place_unit_e():
 def orderer():
     turn_order = {}
     turns = []
-    val = []
-    val_e = []
-    units_k = list(units.keys())
-    units_v = list(units.values())
-    for x in units_v:
-        val.append(x[1])
-    units_e_k = list(units_e.keys())
-    units_e_v = list(units_e.values())
-    for x in units_e_v:
-        val_e.append(x[1])
-    y = 0
-    for x in units_k:
-        turn_order[x] = val[y]
-        y += 1
-    y = 0
-    for x in units_e_k:
-        turn_order[x] = val_e[y]
-        y += 1
-    vals_1 = list(turn_order.values())
-    vals_1.sort(reverse = True)
-    vals_2 = list(turn_order.values())
-    keys = list(turn_order.keys())
-    for x in vals_1:
-        ind = vals_2.index(x)
-        turn = keys[ind]
-        turns.append(turn)
+    for x in units:
+        if units[x][1] not in turn_order:
+            turn_order[units[x][1]] = []
+        turn_order[units[x][1]].append(x)
+    for x in units_e:
+        if units_e[x][1] not in turn_order:
+            turn_order[units_e[x][1]] = []
+        turn_order[units_e[x][1]].append(x)
+    keys_1 = list(turn_order.keys())
+    keys_1.sort(reverse = True)
+    for x in keys_1:
+        for y in turn_order[x]:
+            turns.append(y)
     return turns
+
+def find_mob(tar:str):
+    vals = list(order.values())
+    keys = list(order.keys())
+    location = list(index_2d(vals, tar))
+    mob = keys[location[0]]
+    return mob
+
+def index_2d(myList, v):
+    for i, x in enumerate(myList):
+        if v in x:
+            return (i, x.index(v))
+# From Mark Byers on Stack overflow
 
 def stat_assi():
     stats = {}
@@ -250,7 +251,6 @@ def move(unit:str, name:str):
     pos = find_p()
     position = list(pos[unit])
     mob = stats[name][3]
-    keep_moveing = "Y"
     print("""Unit {0} is at {1}. They can move {2} sqaures.
 You will be asked to input a direction 
 {3} for up, {4} for left {5} for down and {6} for right
@@ -391,7 +391,7 @@ def enemy_calls():
     for x in list3:
         list5.append(int(x[2]))
     for x in list5:
-        if list4[list5.index(x)] in order:
+        if x in order:
             callsigns[x] = list4[list5.index(x)]
     return callsigns
 
@@ -403,7 +403,7 @@ def freind_calls():
     for x in list3:
         list5.append(x[2])
     for x in list5:
-        if list4[list5.index(x)] in order:
+        if x in order:
             callsigns[x] = list4[list5.index(x)]
     return callsigns
 
@@ -503,6 +503,7 @@ place_unit_p()
 place_unit_e()
 order = orderer()
 stats = stat_assi()
+print(stats)
 pos = find_p()
 f_calls = freind_calls()
 e_c = enemy_calls()
@@ -569,8 +570,6 @@ while True:
                         useless = True
                     elif x in f_c:
                         useless_2 = True
-                    else:
-                        g = 'g'
             if useless == False or useless_2 == False:
                 break
     e_c = enemy_calls()
@@ -582,8 +581,6 @@ while True:
             useless = True
         elif x in f_c:
             useless_2 = True
-        else:
-            g = 'g'
     if target != None:
         if stats[target][4] <= 0:
             if useless == False or useless_2 == False:
