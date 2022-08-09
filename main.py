@@ -14,7 +14,7 @@ import os
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Continue"]
 settings_o = ["Controls", "Cancel"]
-features = {"~":"Water", "■":"Cliff","Ð":"Dune"}
+features = {"~":"Water", "/":"Cliff","Ð":"Dune", "■": "Wall"}
 direction = {"Forward": "W", "Left": "A", "Back": "S", "Right": "D", "Stop": "Q"}
 unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 3, 0, 10, 5]
 , "Light Armour": [15, 6, "Mobile", 5, 7, 4, 7, 1], "Medium Armour": [20, 2, "Threatening", 3, 9, 8, 8, 2]
@@ -25,6 +25,7 @@ units = {"1st (African) Division": ["Infantry", 4, "A"], "1st Field Regiment, Ro
 "Royal Marines Division": ["Special Forces", 8, "E"]}
 units_e = {"test 1_e": ["Infantry", 3, "1"], "test 2_e": ["Artillery", 1, "2"]
 , "test 3_e": ["Light Armour", 10, "3"], "test 4_e": ["Medium Armour", 5, "4"], "test 5_e": ["Special Forces", 7, "5"]}
+alphabet = [" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o","p","q","r","s","t","u","v","w","x","y","z"]
 # key: Unit name: Unit type, Inititive, Callsign
 map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"],
 ["a", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
@@ -237,7 +238,7 @@ def find_p():
     for x in map:
         for y in x:
             y = str(y)
-            if y != "." and y not in map[0] and y not in features:
+            if y != "." and y not in alphabet and y not in features:
                 a = x.index(y)
                 pos[y] = map.index(x), a
     return pos
@@ -319,7 +320,7 @@ def move_e(unit:str, name:str):
     ud = position[0] - moves[0]
     lr = position[1] - moves[1]
     while map[ud][lr] != "." and\
-        map[ud][lr] not in map[0] and\
+        map[ud][lr] not in alphabet and\
             map[ud][lr] not in e_k:
         moves = ask_move_e(unit, mob)
         ud = position[0] - moves[0]
@@ -476,6 +477,7 @@ def level():
     level -= 1
     return level
 
+#Functions /\
 
 # code
 while go is not True:
