@@ -6,6 +6,7 @@
 # variables, imports, constants etc.
 from ast import Break
 from csv import unregister_dialect
+from xml.sax.handler import DTDHandler
 from maps import *
 import random
 import time
@@ -27,7 +28,7 @@ units_e = {"test 1_e": ["Infantry", 3, "1"], "test 2_e": ["Artillery", 1, "2"]
 # key: Unit name: Unit type, Inititive, Callsign
 map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"],
 ["a", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
-["b", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+["b", ".", ".", ".", ".", "B", "L", "I", "C", "K", "Y", ".", ".", ".", ".", "."],
 ["c", ".", ".", ".", ".", ".", ".", ".", "Ð", ".", ".", ".", ".", ".", ".", "."],
 ["d", ".", ".", ".", ".", ".", ".", ".", ".", "Ð", ".", ".", ".", ".", ".", "."],
 ["e", ".", ".", "Ð", "Ð", "Ð", ".", ".", ".", ".", "Ð", "Ð", ".", ".", ".", "."],
@@ -92,7 +93,7 @@ def select_yn():
     return choice
 
 def start():
-    print("Welcome to the gmae")
+    print("Welcome to the game")
     print("You have {0} units".format(len(units)))
     print("Please select an option:")
     y = 0
@@ -108,16 +109,11 @@ def view():
     for x in units:
         print("Unit {0}".format(x))
         print("Unit Type: {0}".format(units[x][0]))
-        print("Unit Manpower: {0}".format(units[x][1]))
-        print("Unit Equipment: {0}".format(units[x][2]))
-        print("Unit Strength: {0}".format(units[x][3]))
-        print("Unit Movement: {0}".format(units[x][4]))
+        print("Unit Movement: {0}".format(units[x][2]))
 
 def map_f():
-    y = 0
     for x in map:
-        print(" ".join(map[y]))
-        y += 1
+        print(" ".join(x))
 
 def place_unit_p():
     place = 0
@@ -169,7 +165,7 @@ def index_2d(myList, v):
     for i, x in enumerate(myList):
         if v in x:
             return (i, x.index(v))
-# From Mark Byers on Stack overflow
+# From Mark Byers on Stack overflow, not actually used in code
 
 def stat_assi():
     stats = {}
@@ -210,7 +206,6 @@ def range_f(unit:str):
         enemys.append(e_p)
     p_0 = posi[0]
     p_1 = posi[1]
-    e_c = enemy_calls()
     pos = find_p()
     for x in enemys:
         ep_0 = x[0]
@@ -251,12 +246,13 @@ def move(unit:str, name:str):
     pos = find_p()
     position = list(pos[unit])
     mob = stats[name][3]
-    print("""Unit {0} is at {1}. They can move {2} sqaures.
+    call = units[name][2]
+    print("""Unit {0}({8}) is at {1}. They can move {2} sqaures.
 You will be asked to input a direction 
 {3} for up, {4} for left {5} for down and {6} for right
 The unit will move this direction and ask again until you stop it
 moveing or run out of movement. Enter {7} to halt unit."""
-          .format(name, pos[unit], mob, direction["Forward"], direction["Left"], direction["Back"], direction["Right"], direction["Stop"]))
+          .format(name, pos[unit], mob, direction["Forward"], direction["Left"], direction["Back"], direction["Right"], direction["Stop"], call))
     while mob != 0:
         pos = find_p()
         move = "kilomenjaro"
@@ -391,7 +387,8 @@ def enemy_calls():
     for x in list3:
         list5.append(int(x[2]))
     for x in list5:
-        if x in order:
+        y = list4[list5.index(x)]
+        if y in order:
             callsigns[x] = list4[list5.index(x)]
     return callsigns
 
@@ -403,7 +400,8 @@ def freind_calls():
     for x in list3:
         list5.append(x[2])
     for x in list5:
-        if x in order:
+        y = list4[list5.index(x)]
+        if y in order:
             callsigns[x] = list4[list5.index(x)]
     return callsigns
 
@@ -472,6 +470,13 @@ def c_binds():
     print("The key for {0} was changed to {1}".format(changed, new_bind))
     direction[changed] = new_bind
 
+def level():
+    print("pick what level to play(1-5)")
+    level = select_int(MENU_MIN, len(maps_dict))
+    level -= 1
+    return level
+
+
 # code
 while go is not True:
     choice = menu()
@@ -487,105 +492,116 @@ while go is not True:
     else:
         print("something is brokie")
 
-go = False
-while go is not True:
-    choice = start()
-    if choice == 1:
-        view()
-    elif choice == 2:
-        summary()
-    elif choice == 3:
-        go = True
-    else:
-        print("something is brokie")
-
-place_unit_p()
-place_unit_e()
-order = orderer()
-stats = stat_assi()
-print(stats)
-pos = find_p()
-f_calls = freind_calls()
-e_c = enemy_calls()
-# game starts
-turn = 1
 while True:
-    print("""#######################
-        Turn {0}
-#######################""".format(turn))
-    for u_turn in order:
-        #print(order)
-        #print(u_turn)
-        #print(units)
-        #print(units_e)
-        #print(pos)
-        target = None
-        if u_turn in units:
-            map_f()
-            target = None
-            move(units[u_turn][2],u_turn)
-            pos = find_p()
-            pos_v = list(pos.values())
-            os.system("cls")
-            in_ran = range_f(u_turn)
-            if bool(in_ran) == True:
-                map_f()
-                target = attack(u_turn)
-                os.system("cls")
-                stats = stat_assi()
-        
-        elif u_turn in units_e:
-            target = None
-            move_e(units_e[u_turn][2], u_turn)
-            pos = find_p()
-            pos_v = list(pos.values())
-            os.system("cls")
-            in_ran = range_f(u_turn)
-            if bool(in_ran) == True:
-                map_f()
-                target = attack_e(u_turn)
-                os.system("cls")
-                stats = stat_assi()
+    ddd = level()
+    map = maps_dict[ddd]
+    desc = desc_dict[ddd]
+    units_e = e_form_dict[ddd]
+    order = orderer()
+    enemy_calls()
+    go = False
+    while go is not True:
+        choice = start()
+        if choice == 1:
+            view()
+        elif choice == 2:
+            summary()
+        elif choice == 3:
+            go = True
+        else:
+            print("something is brokie")
 
-        callsigns = enemy_calls()
+    os.system("cls")
+    print(desc)
+    uselsssss = input("Input anything to continue: ")
+    os.system("cls")
+
+    place_unit_p()
+    place_unit_e()
+    order = orderer()
+    stats = stat_assi()
+    pos = find_p()
+    f_calls = freind_calls()
+    e_c = enemy_calls()
+    # game starts
+    turn = 1
+    while True:
+        print("""#######################
+            Turn {0}
+    #######################""".format(turn))
+        for u_turn in order:
+            #print(order)
+            #print(u_turn)
+            #print(units)
+            #print(units_e)
+            #print(pos)
+            target = None
+            if u_turn in units:
+                map_f()
+                target = None
+                move(units[u_turn][2],u_turn)
+                pos = find_p()
+                pos_v = list(pos.values())
+                os.system("cls")
+                in_ran = range_f(u_turn)
+                if bool(in_ran) == True:
+                    map_f()
+                    target = attack(u_turn)
+                    os.system("cls")
+                    stats = stat_assi()
+            
+            elif u_turn in units_e:
+                target = None
+                move_e(units_e[u_turn][2], u_turn)
+                pos = find_p()
+                pos_v = list(pos.values())
+                os.system("cls")
+                in_ran = range_f(u_turn)
+                if bool(in_ran) == True:
+                    map_f()
+                    target = attack_e(u_turn)
+                    os.system("cls")
+                    stats = stat_assi()
+
+            callsigns = enemy_calls()
+            if target != None:
+                if stats[target][4] <= 0:
+                    if target in units:
+                        dead = units[target][2]
+                    elif target in units_e:
+                        dead = units_e[target][2]
+                    pos = find_p()
+                    position = list(pos[dead])
+                    del pos[dead]
+                    order.remove(target)
+                    e_c = enemy_calls()
+                    f_c = freind_calls()
+                    e_c = list(e_c.values())
+                    f_c = list(f_c.values())
+                    map[position[0]][position[1]] = "."
+                    useless = False
+                    useless_2 = False
+                    for x in order:
+                        if x in e_c:
+                            useless = True
+                        elif x in f_c:
+                            useless_2 = True
+                if useless == False or useless_2 == False:
+                    break
+        e_c = enemy_calls()
+        f_c = freind_calls()
+        e_c = list(e_c.values())
+        f_c = list(f_c.values())
+        for x in order:
+            if x in e_c:
+                useless = True
+            elif x in f_c:
+                useless_2 = True
         if target != None:
             if stats[target][4] <= 0:
-                if target in units:
-                    dead = units[target][2]
-                elif target in units_e:
-                    dead = units_e[target][2]
-                pos = find_p()
-                position = list(pos[dead])
-                del pos[dead]
-                order.remove(target)
-                e_c = enemy_calls()
-                f_c = freind_calls()
-                e_c = list(e_c.values())
-                f_c = list(f_c.values())
-                map[position[0]][position[1]] = "."
-                useless = False
-                useless_2 = False
-                for x in order:
-                    if x in e_c:
-                        useless = True
-                    elif x in f_c:
-                        useless_2 = True
-            if useless == False or useless_2 == False:
-                break
-    e_c = enemy_calls()
-    f_c = freind_calls()
-    e_c = list(e_c.values())
-    f_c = list(f_c.values())
-    for x in order:
-        if x in e_c:
-            useless = True
-        elif x in f_c:
-            useless_2 = True
-    if target != None:
-        if stats[target][4] <= 0:
-            if useless == False or useless_2 == False:
-                break
-    pos = find_p()
-    turn += 1
-if useless == False:
-    print("winner")
+                if useless == False or useless_2 == False:
+                    break
+        pos = find_p()
+        turn += 1
+    if useless == False:
+        print("winner")
