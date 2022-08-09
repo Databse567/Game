@@ -8,11 +8,14 @@ from ast import Break
 from csv import unregister_dialect
 from xml.sax.handler import DTDHandler
 from maps import *
+from divisions import *
 import random
 import time
 import os
+sold = []
+money = 0
 options = ["Start", "Instructions", "Settings", "Quit"]
-options_2 = ["View units", "Summary", "Continue"]
+options_2 = ["View units", "Summary", "Shop", "Continue"]
 settings_o = ["Controls", "Cancel"]
 features = {"~":"Water", "/":"Cliff","Ð":"Dune", "■": "Wall"}
 direction = {"Forward": "W", "Left": "A", "Back": "S", "Right": "D", "Stop": "Q"}
@@ -25,7 +28,8 @@ units = {"1st (African) Division": ["Infantry", 4, "A"], "1st Field Regiment, Ro
 "Royal Marines Division": ["Special Forces", 8, "E"]}
 units_e = {"test 1_e": ["Infantry", 3, "1"], "test 2_e": ["Artillery", 1, "2"]
 , "test 3_e": ["Light Armour", 10, "3"], "test 4_e": ["Medium Armour", 5, "4"], "test 5_e": ["Special Forces", 7, "5"]}
-alphabet = [" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o","p","q","r","s","t","u","v","w","x","y","z"]
+alphabet = [" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+            "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 # key: Unit name: Unit type, Inititive, Callsign
 map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"],
 ["a", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
@@ -477,6 +481,24 @@ def level():
     level -= 1
     return level
 
+def shop():
+    print("You have {0} deployment points".format(money))
+    print("Here are the units ready for deployment:")
+    for_sale = []
+    for x in range(3):
+        while True:
+            g = random.randint(0, len(div_types))
+            f = random.randint(0, len(div_types[g]))
+            if f not in for_sale and f not in sold:
+                for_sale.append(f)
+                sold.append(f)
+                break
+    y = 1
+    for x in for_sale:
+        print("{1}. {0}".format(x, y))
+        y += 1
+    select_int
+
 #Functions /\
 
 # code
@@ -499,7 +521,8 @@ while True:
     map = maps_dict[ddd]
     desc = desc_dict[ddd]
     units_e = e_form_dict[ddd]
-    order = orderer()
+    winner_cash = rewards[ddd] 
+    order = orderer
     enemy_calls()
     go = False
     while go is not True:
@@ -509,6 +532,8 @@ while True:
         elif choice == 2:
             summary()
         elif choice == 3:
+            shop()
+        elif choice == 4:
             go = True
         else:
             print("something is brokie")
@@ -607,3 +632,8 @@ while True:
         turn += 1
     if useless == False:
         print("winner")
+        money += winner_cash
+    else:
+        print("L")
+        break
+print("Game over")
