@@ -13,7 +13,7 @@ import random
 import time
 import os
 sold = []
-money = 0
+money = 100000000
 options = ["Start", "Instructions", "Settings", "Quit"]
 options_2 = ["View units", "Summary", "Shop", "Continue"]
 settings_o = ["Controls", "Cancel"]
@@ -24,12 +24,12 @@ unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 
 ,"Special Forces": [10, 10, "Anti-tank", 4, 5, 0, 9, 3]}
 # key: Unit Type: Attack, Defence, Ability, Mobility, Health, Armour, Penetration, Range
 units = {"1st (African) Division": ["Infantry", 4, "A"], "1st Field Regiment, Royal Artillery": ["Artillery", 2, "B"]
-, "2nd Armour Division(Light detachment)": ["Light Armour", 10, "C"], "2nd Armour Division": ["Medium Armour", 6, "D"],
-"Royal Marines Division": ["Special Forces", 8, "E"]}
+, "2nd Armour Division(Light detachment)": ["Light Armour", 10, "C"]}
 units_e = {"test 1_e": ["Infantry", 3, "1"], "test 2_e": ["Artillery", 1, "2"]
 , "test 3_e": ["Light Armour", 10, "3"], "test 4_e": ["Medium Armour", 5, "4"], "test 5_e": ["Special Forces", 7, "5"]}
 alphabet = [" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
             "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+call_t = 3
 # key: Unit name: Unit type, Inititive, Callsign
 map = [[" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"],
 ["a", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
@@ -481,23 +481,37 @@ def level():
     level -= 1
     return level
 
-def shop():
-    print("You have {0} deployment points".format(money))
-    print("Here are the units ready for deployment:")
-    for_sale = []
-    for x in range(3):
-        while True:
-            g = random.randint(0, len(div_types))
-            f = random.randint(0, len(div_types[g]))
-            if f not in for_sale and f not in sold:
-                for_sale.append(f)
-                sold.append(f)
+def shop(money:int, call_t:int):
+    while True:
+        print("You have {0} deployment points".format(money))
+        print("Here are the units ready for deployment:")
+        y = 1
+        for x in for_sale:
+            z = prices[y - 1]
+            print("   {1}. {0} for ${2}".format(x, y, z))
+            y += 1
+        print("Enter 0 to cancel")
+        pick = select_int(MENU_MIN, len(for_sale))
+        pick -= 1
+        if pick == -1:
+            break
+        while prices[pick] > money:
+            print("You can't afford that unit, choose something else")
+            pick = select_int(MENU_MIN, len(for_sale))
+            pick -= 1
+            if pick == -1:
                 break
-    y = 1
-    for x in for_sale:
-        print("{1}. {0}".format(x, y))
-        y += 1
-    select_int
+        if pick == -1:
+            break
+        money -= prices[pick]
+        fs_k = list(for_sale.keys())
+        fs_v = list(for_sale.values())
+        call_t += 1
+        fs_v[pick][3] = alphabet[call_t]
+        sold.append(fs_k[pick])
+        units[fs_k[pick]] = for_sale[fs_k[pick]]
+    return money
+
 
 #Functions /\
 
@@ -517,26 +531,44 @@ while go is not True:
         print("something is brokie")
 
 while True:
-    ddd = level()
-    map = maps_dict[ddd]
-    desc = desc_dict[ddd]
-    units_e = e_form_dict[ddd]
-    winner_cash = rewards[ddd] 
+    for_sale = {}
+    prices = []
+    for x in range(3):
+        while True:
+            g = random.randint(0, len(div_types) - 1)
+            f = random.randint(0, len(div_types[g]) - 1)
+            divs = list(div_types[g].keys())
+            c = divs[f]
+            if c not in for_sale and c not in sold:
+                for_sale[c] = div_types[g][c]
+                prices.append(costs[g])
+                break
     order = orderer
     enemy_calls()
+    choice = 0
     go = False
-    while go is not True:
+    while go is False:
         choice = start()
         if choice == 1:
             view()
         elif choice == 2:
             summary()
         elif choice == 3:
-            shop()
+            if min(prices) <= money:
+                money = shop(money)
+                call_t = len(units)
+            else:
+                print("You can't afford anything")
         elif choice == 4:
             go = True
         else:
             print("something is brokie")
+
+    ddd = level()
+    map = maps_dict[ddd]
+    desc = desc_dict[ddd]
+    units_e = e_form_dict[ddd]
+    winner_cash = rewards[ddd] 
 
     os.system("cls")
     print(desc)
