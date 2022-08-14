@@ -67,8 +67,8 @@ MENU_MIN = 1
 go = False
 # Functions
 def menu():
-    print("""=========================================
-            Title goes here :)          
+    print("""==========================================
+                I Hate Sand          
 ==========================================""")
     y = 0
     for x in options:
