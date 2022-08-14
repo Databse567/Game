@@ -6,16 +6,17 @@
 # variables, imports, constants etc.
 from ast import Break
 from csv import unregister_dialect
+import pickle
 from xml.sax.handler import DTDHandler
 from maps import *
 from divisions import *
 import random
 import time
 import os
-sold = []
-money = 100000000
+sold = ["1st (African) Division", "1st Field Regiment, Royal Artillery", "2nd Armoured Division(Light detachment)"]
+money = 3
 options = ["Start", "Instructions", "Settings", "Quit"]
-options_2 = ["View units", "Summary", "Shop", "Continue"]
+options_2 = ["View units", "Shop", "Continue"]
 settings_o = ["Controls", "Cancel"]
 features = {"~":"Water", "/":"Cliff","Ð":"Dune", "■": "Wall"}
 direction = {"Forward": "W", "Left": "A", "Back": "S", "Right": "D", "Stop": "Q"}
@@ -24,7 +25,7 @@ unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 
 ,"Special Forces": [10, 10, "Anti-tank", 4, 5, 0, 9, 3]}
 # key: Unit Type: Attack, Defence, Ability, Mobility, Health, Armour, Penetration, Range
 units = {"1st (African) Division": ["Infantry", 4, "A"], "1st Field Regiment, Royal Artillery": ["Artillery", 2, "B"]
-, "2nd Armour Division(Light detachment)": ["Light Armour", 10, "C"]}
+, "2nd Armoured Division(Light detachment)": ["Light Armour", 10, "C"]}
 units_e = {"test 1_e": ["Infantry", 3, "1"], "test 2_e": ["Artillery", 1, "2"]
 , "test 3_e": ["Light Armour", 10, "3"], "test 4_e": ["Medium Armour", 5, "4"], "test 5_e": ["Special Forces", 7, "5"]}
 alphabet = [" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
@@ -99,7 +100,6 @@ def select_yn():
 
 def start():
     print("Welcome to the game")
-    print("You have {0} units".format(len(units)))
     print("Please select an option:")
     y = 0
     for x in options_2:
@@ -110,11 +110,12 @@ def start():
     return choice
 
 def view():
+    print("You have {0} units".format(len(units)))
     print("Here is a list of your units")
     for x in units:
         print("Unit {0}".format(x))
         print("Unit Type: {0}".format(units[x][0]))
-        print("Unit Movement: {0}".format(units[x][2]))
+        print("Unit Callsign: {0}".format(units[x][2]))
 
 def map_f():
     for x in map:
@@ -491,13 +492,13 @@ def shop(money:int, call_t:int):
             print("   {1}. {0} for ${2}".format(x, y, z))
             y += 1
         print("Enter 0 to cancel")
-        pick = select_int(MENU_MIN, len(for_sale))
+        pick = select_int(MINI, len(for_sale))
         pick -= 1
         if pick == -1:
             break
         while prices[pick] > money:
             print("You can't afford that unit, choose something else")
-            pick = select_int(MENU_MIN, len(for_sale))
+            pick = select_int(MINI, len(for_sale))
             pick -= 1
             if pick == -1:
                 break
@@ -507,11 +508,11 @@ def shop(money:int, call_t:int):
         fs_k = list(for_sale.keys())
         fs_v = list(for_sale.values())
         call_t += 1
-        fs_v[pick][3] = alphabet[call_t]
+        fs_v[pick][2] = alphabet[call_t].upper()
         sold.append(fs_k[pick])
         units[fs_k[pick]] = for_sale[fs_k[pick]]
+        for_sale.pop(fs_k[pick])
     return money
-
 
 #Functions /\
 
@@ -543,8 +544,6 @@ while True:
                 for_sale[c] = div_types[g][c]
                 prices.append(costs[g])
                 break
-    order = orderer
-    enemy_calls()
     choice = 0
     go = False
     while go is False:
@@ -552,14 +551,12 @@ while True:
         if choice == 1:
             view()
         elif choice == 2:
-            summary()
-        elif choice == 3:
             if min(prices) <= money:
-                money = shop(money)
                 call_t = len(units)
+                money = shop(money, call_t)
             else:
                 print("You can't afford anything")
-        elif choice == 4:
+        elif choice == 3:
             go = True
         else:
             print("something is brokie")
