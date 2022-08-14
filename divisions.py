@@ -55,4 +55,4 @@ spec_f_div = {\
 "Special Air Service Regiment":["Special Forces", 8, ""]}
 
 div_types = [infantry_div, artillery_div, l_tank_div, m_tank_div, spec_f_div]
-costs = [4, 7, 7, 9, 9]
+costs = [5, 7, 7, 9, 9]
