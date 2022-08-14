@@ -258,7 +258,8 @@ You will be asked to input a direction
 {3} for up, {4} for left {5} for down and {6} for right
 The unit will move this direction and ask again until you stop it
 moveing or run out of movement. Enter {7} to halt unit."""
-          .format(name, pos[unit], mob, direction["Forward"], direction["Left"], direction["Back"], direction["Right"], direction["Stop"], call))
+          .format(name, pos[unit], mob, direction["Forward"], direction["Left"], 
+          direction["Back"], direction["Right"], direction["Stop"], call))
     while mob != 0:
         pos = find_p()
         move = "kilomenjaro"
@@ -281,7 +282,8 @@ moveing or run out of movement. Enter {7} to halt unit."""
                     print("Space occupied")
             os.system("cls")
             map_f()
-            print("Unit {0} is at {1}. They can move {2} sqaures.".format(name, pos[unit], mob))
+            print("Unit {0} is at {1}. They can move {2} sqaures."
+                  .format(name, pos[unit], mob))
         except:
             print("That would be deserting")
 
@@ -415,7 +417,7 @@ def summary():
     print("summary")
 
 def instructions_f():
-    print("Welcome to the instructions place!") # Needs new name
+    print("Welcome to instructions.") # Needs new name
     while True:
         y = 0
         ins = list(instructions.keys())
@@ -437,7 +439,7 @@ def instructions_f():
     os.system("cls")
 
 def settings():
-    print("Welcome to the settings place!") # Needs new name
+    print("Welcome to Settings") # Needs new name
     while True:
         y = 0
         for x in settings_o:
@@ -463,7 +465,8 @@ def c_binds():
     change -= 1
     new_bind = "gg"
     while True:
-        new_bind = input("Please enter in the new key to move {0}: ".format(keys[change]))
+        new_bind = input("Please enter in the new key to move {0}: "
+                         .format(keys[change]))
         try:
             new_bind.upper()
         except:
