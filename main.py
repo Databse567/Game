@@ -12,6 +12,7 @@ from maps import *
 from divisions import *
 import random
 import time
+import json
 import os
 sold = ["1st (African) Division", "1st Field Regiment, Royal Artillery", "2nd Armoured Division(Light detachment)"]
 money = 3
@@ -68,7 +69,7 @@ go = False
 # Functions
 def menu():
     print("""==========================================
-                I Hate Sand          
+                I Hate Sand
 ==========================================""")
     y = 0
     for x in options:
