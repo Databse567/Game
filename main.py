@@ -21,9 +21,9 @@ options_2 = ["View units", "Shop", "Continue"]
 settings_o = ["Controls", "Cancel"]
 features = {"~":"Water", "/":"Cliff","Ð":"Dune", "■": "Wall"}
 direction = {"Forward": "W", "Left": "A", "Back": "S", "Right": "D", "Stop": "Q"}
-unit_t_s = {"Infantry": [3, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 3, 0, 10, 5]
-, "Light Armour": [15, 6, "Mobile", 5, 7, 4, 7, 1], "Medium Armour": [20, 2, "Threatening", 3, 9, 8, 8, 2]
-,"Special Forces": [10, 10, "Anti-tank", 4, 5, 0, 9, 3]}
+unit_t_s = {"Infantry": [5, 10, "Dispersed", 2, 10, 1, 4, 2], "Artillery": [10, 0, "Ranged", 1, 3, 0, 10, 5]
+, "Light Armour": [8, 6, "Mobile", 5, 7, 4, 7, 1], "Medium Armour": [12, 2, "Threatening", 3, 9, 8, 8, 2]
+,"Special Forces": [9, 10, "Anti-tank", 4, 5, 0, 9, 3]}
 # key: Unit Type: Attack, Defence, Ability, Mobility, Health, Armour, Penetration, Range
 units = {"1st (African) Division": ["Infantry", 4, "A"], "1st Field Regiment, Royal Artillery": ["Artillery", 2, "B"]
 , "2nd Armoured Division(Light detachment)": ["Light Armour", 10, "C"]}
@@ -319,6 +319,55 @@ def move_how(direct:str, unit:str):
     return cords
 
 def move_e(unit:str, name:str):
+    pos = find_p()
+    position = list(pos[unit])
+    mob = stats[name][3]
+    while mob != 0:
+        pos = find_p()
+        move = "kilomenjaro"
+        position = list(pos[unit])
+        in_ran= range_f(name)
+        if bool(in_ran) == True:
+            break
+        try:
+            while True:
+                move = ask_for_move_e()
+                cords = move_how_e(move, unit)
+                if cords == "stop":
+                    mob = 0
+                    break
+                pos = find_p()
+                position = list(pos[unit])
+                if map[cords[0]][cords[1]] == ".":
+                    map[cords[0]][cords[1]] = unit
+                    map[position[0]][position[1]] = "."
+                    mob -= 1
+                    break
+        except:
+            useless = 'use'
+
+def ask_for_move_e():
+    move = random.randint(1,4)
+    return move
+
+def move_how_e(direct:str, unit:str):
+    cords = []
+    pos = find_p()
+    position = list(pos[unit])
+    ud = position[0]
+    lr = position[1]
+    if direct == 1 or direct == 2:
+        move_2 = -1
+    elif direct == 3 or direct == 4:
+        move_2 = 1
+    if direct == 1 or direct == 3:
+        ud += move_2
+    elif direct == 4 or direct == 2:
+        lr += move_2
+    cords.append(ud)
+    cords.append(lr)
+    return cords
+"""
     position = list(pos[unit])
     mob = stats[name][3]
     moves = ask_move_e(unit, mob)
@@ -345,6 +394,7 @@ def ask_move_e(unit:str, movement:int):
     while pos[unit][1] - hor < 1 or pos[unit][1] - hor > 15:
         hor = random.randint(-movement, movement)
     return ver, hor
+"""
 
 def attack(unit:str):
     p_targets = []
