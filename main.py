@@ -68,6 +68,7 @@ MENU_MIN = 1
 go = False
 # Functions
 def menu():
+    """The function that prints at the start of the game"""
     print("""==========================================
                 I Hate Sand
 ==========================================""")
@@ -78,6 +79,8 @@ def menu():
     return select_int(MENU_MIN, len(options))
 
 def select_int(min:int, max:int):
+    """The primary input statement throughout the code when
+    numbers are being input."""
     choice = min - 1
     while True:
         try:
@@ -89,6 +92,8 @@ def select_int(min:int, max:int):
     return choice
 
 def select_yn():
+    """The primary input statement throughout the code when
+    Y or N are being input"""
     choice = "b"
     while True:
         try:
@@ -100,6 +105,8 @@ def select_yn():
     return choice
 
 def start():
+    """The menu that pops up for the user to buy units, view their forces
+    and start the game."""
     print("Welcome to the game")
     print("Please select an option:")
     y = 0
@@ -111,6 +118,7 @@ def start():
     return choice
 
 def view():
+    """Allows user to view their units."""
     print("You have {0} units".format(len(units)))
     print("Here is a list of your units")
     for x in units:
@@ -119,10 +127,12 @@ def view():
         print("Unit Callsign: {0}".format(units[x][2]))
 
 def map_f():
+    """prints the map"""
     for x in map:
         print(" ".join(x))
 
 def place_unit_p():
+    """Allows user to place their units"""
     place = 0
     print("""enter the number corresponding to the the vertical number
 that you want to place your unit on. i.e a -> 1, b -> 2""")
@@ -136,6 +146,7 @@ that you want to place your unit on. i.e a -> 1, b -> 2""")
         os.system("cls")
 
 def place_unit_e():
+    """Allows enemy to palce their units"""
     place = 0
     for x in units_e:
         while map[1][place] != ".":
@@ -144,8 +155,10 @@ def place_unit_e():
         map[1].insert(place, units_e[x][2])
 
 def orderer():
+    """creates the turn order"""
     turn_order = {}
     turns = []
+    # puts units callsigns in a list
     for x in units:
         if units[x][1] not in turn_order:
             turn_order[units[x][1]] = []
@@ -156,25 +169,14 @@ def orderer():
         turn_order[units_e[x][1]].append(x)
     keys_1 = list(turn_order.keys())
     keys_1.sort(reverse = True)
+    # creates the actuale order
     for x in keys_1:
         for y in turn_order[x]:
             turns.append(y)
     return turns
 
-def find_mob(tar:str):
-    vals = list(order.values())
-    keys = list(order.keys())
-    location = list(index_2d(vals, tar))
-    mob = keys[location[0]]
-    return mob
-
-def index_2d(myList, v):
-    for i, x in enumerate(myList):
-        if v in x:
-            return (i, x.index(v))
-# From Mark Byers on Stack overflow, not actually used in code
-
 def stat_assi():
+    """Gets the stats of each unit"""
     stats = {}
     list1 = list(units.keys())
     list2 = list(units_e.keys())
@@ -190,6 +192,7 @@ def stat_assi():
     return stats
 
 def range_f(unit:str):
+    """finds which units are in range of another unit"""
     range_v = stats[unit][7]
     enemys = []
     in_range = []
@@ -197,6 +200,7 @@ def range_f(unit:str):
     pos = find_p()
     val = list(pos.values())
     key = list(pos.keys())
+    # adds units in battle to a lsit
     if unit in units:
         call = units[unit][2]
         posi = pos[call]
@@ -214,6 +218,7 @@ def range_f(unit:str):
     p_0 = posi[0]
     p_1 = posi[1]
     pos = find_p()
+    # figures out if each are in range
     for x in enemys:
         ep_0 = x[0]
         ep_1 = x[1]
@@ -230,11 +235,10 @@ def range_f(unit:str):
 
 
 def find_p():
+    """finds the position of each unit"""
     pos = {}
-    units_k = list(units.keys())
     units_o = []
     units_l = list(units.values())
-    units_k_e = list(units_e.keys())
     units_o_e = []
     units_l_e = list(units_e.values())
     for x in units_l:
@@ -250,10 +254,12 @@ def find_p():
     return pos
 
 def move(unit:str, name:str):
+    """The function for moveing units"""
     pos = find_p()
     position = list(pos[unit])
     mob = stats[name][3]
     call = units[name][2]
+    # explains movement
     print("""Unit {0}({8}) is at {1}. They can move {2} sqaures.
 You will be asked to input a direction 
 {3} for up, {4} for left {5} for down and {6} for right
@@ -261,6 +267,7 @@ The unit will move this direction and ask again until you stop it
 moveing or run out of movement. Enter {7} to halt unit."""
           .format(name, pos[unit], mob, direction["Forward"], direction["Left"], 
           direction["Back"], direction["Right"], direction["Stop"], call))
+    # move loop, goes untill unit has no moves left
     while mob != 0:
         pos = find_p()
         move = "kilomenjaro"
@@ -289,6 +296,7 @@ moveing or run out of movement. Enter {7} to halt unit."""
             print("That would be deserting")
 
 def ask_for_move():
+    """part of move function"""
     choice = "Bobux?"
     dir_val = list(direction.values())
     while choice not in dir_val:
@@ -299,6 +307,7 @@ def ask_for_move():
     return choice
 
 def move_how(direct:str, unit:str):
+    """part of move function"""
     cords = []
     pos = find_p()
     position = list(pos[unit])
@@ -319,6 +328,7 @@ def move_how(direct:str, unit:str):
     return cords
 
 def move_e(unit:str, name:str):
+    """Enemy move function, wqorks same as player one"""
     pos = find_p()
     position = list(pos[unit])
     mob = stats[name][3]
@@ -347,10 +357,12 @@ def move_e(unit:str, name:str):
             useless = 'use'
 
 def ask_for_move_e():
+    """part of enemy move function"""
     move = random.randint(1,4)
     return move
 
 def move_how_e(direct:str, unit:str):
+    """part of enemy move function"""
     cords = []
     pos = find_p()
     position = list(pos[unit])
@@ -367,42 +379,16 @@ def move_how_e(direct:str, unit:str):
     cords.append(ud)
     cords.append(lr)
     return cords
-"""
-    position = list(pos[unit])
-    mob = stats[name][3]
-    moves = ask_move_e(unit, mob)
-    moves = list(moves)
-    e_c = enemy_calls()
-    e_k = list(e_c.keys())
-    ud = position[0] - moves[0]
-    lr = position[1] - moves[1]
-    while map[ud][lr] != "." and\
-        map[ud][lr] not in alphabet and\
-            map[ud][lr] not in e_k:
-        moves = ask_move_e(unit, mob)
-        ud = position[0] - moves[0]
-        lr = position[1] - moves[1]
-    map[ud][lr] = unit
-    map[position[0]][position[1]] = "."
-
-def ask_move_e(unit:str, movement:int):
-    ver = 100000000000000
-    hor = 100000000000000
-    while pos[unit][0] - ver < 1 or pos[unit][0] - ver > 10:
-        ver = random.randint(-movement, movement)
-        movement -= ver
-    while pos[unit][1] - hor < 1 or pos[unit][1] - hor > 15:
-        hor = random.randint(-movement, movement)
-    return ver, hor
-"""
 
 def attack(unit:str):
+    """Attack function"""
     p_targets = []
     pos_v = list(pos.values())
     f_calls = freind_calls()
     f_calls = list(f_calls.keys())
     in_ran = range_f(unit)
     stats = stat_assi()
+    # lets user attack
     if bool(in_ran) == True:
         for x in in_ran:
             p_targets.append(x)
@@ -417,6 +403,7 @@ def attack(unit:str):
         target -= 1
         tar = p_targets[target]
         callsigns = enemy_calls()
+        # shoots at the enmy selected
         if tar != "Hold Fire":
             stats[callsigns[int(tar)]][4] -= stats[unit][0]
             return callsigns[int(tar)]
@@ -425,6 +412,7 @@ def attack(unit:str):
             return None
 
 def attack_e(unit:str):
+    """Enemy Attack function"""
     p_targets = []
     stats = stat_assi()
     in_ran = range_f(unit)
@@ -439,6 +427,7 @@ def attack_e(unit:str):
         return callsigns[tar]
 
 def enemy_calls():
+    """Finds enemy callsigns"""
     list3 = list(units_e.values())
     list4 = list(units_e.keys())
     list5 = []
@@ -452,6 +441,7 @@ def enemy_calls():
     return callsigns
 
 def freind_calls():
+    """Finds freindly callsigns"""
     list3 = list(units.values())
     list4 = list(units.keys())
     list5 = []
@@ -464,10 +454,8 @@ def freind_calls():
             callsigns[x] = list4[list5.index(x)]
     return callsigns
 
-def summary():
-    print("summary")
-
 def instructions_f():
+    """Prints the instructions"""
     print("Welcome to instructions.") # Needs new name
     while True:
         y = 0
@@ -490,6 +478,7 @@ def instructions_f():
     os.system("cls")
 
 def settings():
+    """Settings menu"""
     print("Welcome to Settings") # Needs new name
     while True:
         y = 0
@@ -504,6 +493,7 @@ def settings():
     os.system("cls")
 
 def c_binds():
+    """Allows user to change which butttones they use to move"""
     print("Change Key Bindings here!")
     keys = list(direction.keys())
     values = list(direction.values())
@@ -531,12 +521,14 @@ def c_binds():
     direction[changed] = new_bind
 
 def level():
+    """Allows user to pick what level they play"""
     print("pick what level to play(1-5)")
     level = select_int(MENU_MIN, len(maps_dict))
     level -= 1
     return level
 
 def shop(money:int, call_t:int):
+    """Allows user to but units"""
     while True:
         print("You have {0} deployment points".format(money))
         print("Here are the units ready for deployment:")
@@ -570,7 +562,7 @@ def shop(money:int, call_t:int):
 
 #Functions /\
 
-# code
+# initial menu
 while go is not True:
     choice = menu()
     if choice == 1:
@@ -585,6 +577,7 @@ while go is not True:
     else:
         print("something is brokie")
 
+# randomizes what units are in the shop
 while True:
     for_sale = {}
     prices = []
@@ -600,6 +593,7 @@ while True:
                 break
     choice = 0
     go = False
+# allows user to buy stuff
     while go is False:
         choice = start()
         if choice == 1:
@@ -615,6 +609,7 @@ while True:
         else:
             print("something is brokie")
 
+#cahnges thins to be for the level selected
     ddd = level()
     map = maps_dict[ddd]
     desc = desc_dict[ddd]
@@ -626,6 +621,7 @@ while True:
     uselsssss = input("Input anything to continue: ")
     os.system("cls")
 
+#game starts
     place_unit_p()
     place_unit_e()
     order = orderer()
@@ -639,6 +635,7 @@ while True:
         print("""#######################
             Turn {0}
     #######################""".format(turn))
+# takes the turns
         for u_turn in order:
             #print(order)
             #print(u_turn)
@@ -646,6 +643,7 @@ while True:
             #print(units_e)
             #print(pos)
             target = None
+# freind turn code
             if u_turn in units:
                 map_f()
                 target = None
@@ -659,7 +657,7 @@ while True:
                     target = attack(u_turn)
                     os.system("cls")
                     stats = stat_assi()
-            
+# enemy turn code
             elif u_turn in units_e:
                 target = None
                 move_e(units_e[u_turn][2], u_turn)
@@ -672,8 +670,8 @@ while True:
                     target = attack_e(u_turn)
                     os.system("cls")
                     stats = stat_assi()
-
             callsigns = enemy_calls()
+# removes dead units from the game
             if target != None:
                 if stats[target][4] <= 0:
                     if target in units:
@@ -702,6 +700,7 @@ while True:
         f_c = freind_calls()
         e_c = list(e_c.values())
         f_c = list(f_c.values())
+# if all units from one side dies, the level ends
         for x in order:
             if x in e_c:
                 useless = True
@@ -713,6 +712,7 @@ while True:
                     break
         pos = find_p()
         turn += 1
+# decides if user won or lost
     if useless == False:
         print("winner")
         money += winner_cash
